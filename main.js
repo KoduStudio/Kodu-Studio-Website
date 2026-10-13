@@ -13,6 +13,12 @@
   // ===================================================================================================
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* Lucide icon markup (24px grid, 2 stroke, round caps and joins) from its paths */
+  const lucide = (paths, cls) =>
+    '<svg ' + (cls ? 'class="' + cls + '" ' : '') +
+    'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + paths + '</svg>';
+
   /* ---------- Smooth scroll (Lenis) ----------
      Light inertia on wheel/trackpad; touch stays native so phones feel normal. Driven by GSAP's
      ticker so it shares one animation clock with everything else. */
@@ -26,8 +32,16 @@
   const scrollToTop = () => { if (lenis) lenis.scrollTo(0, { immediate: true, force: true }); else window.scrollTo(0, 0); };
   // Freeze scrolling while a page transition plays (wheel, trackpad and touch) so the flying
   // image never has to chase a moving page
-  const lockScroll = () => { html.classList.add('lock-scroll'); if (lenis) lenis.stop(); };
-  const unlockScroll = () => { html.classList.remove('lock-scroll'); if (lenis) lenis.start(); };
+  // Keyed, because page transitions and the contact panel both lock: the page only scrolls
+  // again once every holder has let go. Unlocking a key twice is harmless.
+  const scrollLocks = new Set();
+  const applyScrollLock = () => {
+    const locked = scrollLocks.size > 0;
+    html.classList.toggle('lock-scroll', locked);
+    if (lenis) locked ? lenis.stop() : lenis.start();
+  };
+  const lockScroll = (key = 'transition') => { scrollLocks.add(key); applyScrollLock(); };
+  const unlockScroll = (key = 'transition') => { scrollLocks.delete(key); applyScrollLock(); };
 
   /* ---------- CUSTOM CURSOR ----------
      White dot in difference blend mode that trails the pointer with a light lerp, growing
@@ -118,9 +132,8 @@
   const CONTACT_EMAIL = 'kodudesignstudio@gmail.com';
   const contactTrigger = document.querySelector('.nav__item[href^="mailto:"]');
   if (contactTrigger) {
-    const arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
-    // Lucide arrow-up-right for the external links, same stroke weight
-    const extArrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>';
+    const arrow = lucide('<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>');              // arrow-right
+    const extArrow = lucide('<path d="M7 7h10v10"/><path d="M7 17 17 7"/>');             // arrow-up-right
     const scrim = document.createElement('div');
     scrim.className = 'contact-scrim';
     const panel = document.createElement('aside');
@@ -156,13 +169,18 @@
     rollify(panel.querySelectorAll('.roll-target'));
 
     const closeBtn = panel.querySelector('.contact-panel__close');
+    // Keep focus inside the panel while it is open
+    const setBackgroundInert = (on) => {
+      document.querySelectorAll('.site-header, main').forEach((el) => { el.inert = on; });
+    };
     let contactOpen = false;
     let contactTl = null;
 
     function openContact() {
       if (contactOpen) return;
       contactOpen = true;
-      lockScroll();
+      lockScroll('contact');
+      setBackgroundInert(true);
       panel.scrollTop = 0;
       gsap.set([scrim, panel], { visibility: 'visible' });
       if (contactTl) contactTl.kill();
@@ -175,9 +193,10 @@
     function closeContact() {
       if (!contactOpen) return;
       contactOpen = false;
+      setBackgroundInert(false);
       if (contactTl) contactTl.kill();
       contactTl = gsap.timeline({
-        onComplete() { gsap.set([scrim, panel], { visibility: 'hidden' }); unlockScroll(); }
+        onComplete() { gsap.set([scrim, panel], { visibility: 'hidden' }); unlockScroll('contact'); }
       })
         .to(panel, { xPercent: 100, x: 0, duration: 0.55, ease: 'power3.in' }, 0)
         .to(scrim, { opacity: 0, duration: 0.45, ease: 'power2.in' }, 0);
@@ -268,7 +287,7 @@
     });
   }
 
-  const ARROW = '<svg class="ext-link__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>';
+  const ARROW = lucide('<path d="M7 7h10v10"/><path d="M7 17 17 7"/>', 'ext-link__icon');   // arrow-up-right
   const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 
   // Current rendered scale of an element (hover zooms etc.), so a clone can start from exactly what's on screen
@@ -617,8 +636,7 @@
   const cardMeta = gsap.utils.toArray('.project-card__meta');
   const HOME_TITLE = document.title;
   const mobileMQ = matchMedia('(max-width: 699px)');   // the mobile carousel breakpoint
-  html.classList.add('lock-scroll');                     // released when the intro completes
-  if (lenis) lenis.stop();
+  lockScroll('intro');                                   // released when the intro completes
 
   html.classList.add('is-loading');
 
@@ -641,8 +659,7 @@
     if (reduceMotion || typeof gsap === 'undefined') {
       html.classList.remove('is-loading');
       html.classList.add('intro-done');
-      html.classList.remove('lock-scroll');
-        if (lenis) lenis.start();
+      unlockScroll('intro');
       preloadHeroes();
       return;
     }
@@ -681,8 +698,7 @@
       defaults: { ease: 'power3.out' },
       onComplete() {
         html.classList.add('intro-done');
-        html.classList.remove('lock-scroll');
-        if (lenis) lenis.start();
+        unlockScroll('intro');
         // Drop GSAP's inline transforms so text sits on whole pixels and renders crisp
         gsap.set([brandLines, navItems], { clearProps: 'transform,opacity' });
         preloadHeroes();
@@ -758,8 +774,7 @@
     if (window.koduIntro && window.koduIntro.isActive()) window.koduIntro.progress(1);
     html.classList.remove('is-loading');
     html.classList.add('intro-done');
-    html.classList.remove('lock-scroll');
-        if (lenis) lenis.start();
+    unlockScroll('intro');
     busy = true;
     projectOpen = true;
     lockScroll();
