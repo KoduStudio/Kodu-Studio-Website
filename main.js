@@ -115,7 +115,7 @@
      "Contact" in the nav slides a panel in from the right and dims + blurs the page behind it.
      Built here so it exists on every page without duplicating markup. Delete this block and
      the matching CSS to remove; the nav link falls back to its plain mailto: href. */
-  const CONTACT_EMAIL = 'kodudesignlab@gmail.com';
+  const CONTACT_EMAIL = 'kodudesignstudio@gmail.com';
   const contactTrigger = document.querySelector('.nav__item[href^="mailto:"]');
   if (contactTrigger) {
     const arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
