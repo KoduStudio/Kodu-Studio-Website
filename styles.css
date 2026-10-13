@@ -736,7 +736,7 @@ html.lock-scroll { overflow: hidden; }
   gap: 1rem;
   padding: clamp(0.9rem, 1.6vw, 1.4rem) 0;
   border-top: 1px solid var(--panel-line);
-  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-size: clamp(1.0625rem, 2.9vw, 2rem);   /* fallback where cqw is unsupported */
   line-height: 1.1;
 }
 .contact-link:last-of-type { border-bottom: 1px solid var(--panel-line); }
@@ -750,6 +750,12 @@ html.lock-scroll { overflow: hidden; }
 .contact-link:hover .roll .char { transform: translateY(-100%); }
 .contact-link:hover svg { transform: translateX(6px); }
 .contact-link--ext:hover svg { transform: translate(4px, -4px); }
+
+/* The email is 26 characters, so the type is sized against the panel width, not the viewport */
+@supports (container-type: inline-size) {
+  .contact-panel { container-type: inline-size; }
+  .contact-link { font-size: clamp(1.0625rem, 5.6cqw, 2.5rem); }
+}
 .contact-link .roll { --roll-step: 10ms; }
 
 @media (max-width: 899px) {
