@@ -1,4 +1,4 @@
-# Kodu Design Lab
+# Kodu Studio
 
 Personal portfolio site for Lachlan Sarv. Static HTML/CSS/JS with GSAP — no framework, no npm dependencies.
 

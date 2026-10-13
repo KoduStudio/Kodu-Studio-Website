@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/*  Kodu Design Lab — site builder
+/*  Kodu Studio — site builder
     Reads content/<slug>/project.json + images and generates:
       images/<slug>/            resized JPG variants (never upscaled)
       projects.js               data consumed by main.js

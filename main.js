@@ -1,4 +1,4 @@
-/* Kodu Design Lab — homepage intro, theme toggle, project page + transitions */
+/* Kodu Studio — homepage intro, theme toggle, project page + transitions */
 (function () {
   const html = document.documentElement;
   const body = document.body;
@@ -470,7 +470,7 @@
       }
       fromPage.replaceWith(newPage);
       scrollToTop();
-      document.title = PROJECTS[nextSlug].name + ' — Kodu Design Lab';
+      document.title = PROJECTS[nextSlug].name + ' — Kodu Studio';
       after(newPage);
 
       if (clone) {
@@ -517,7 +517,7 @@
     const slug = body.dataset.project;
     const built = buildProjectPage(slug);
     staticPage.replaceWith(built);
-    if (PROJECTS[slug]) document.title = PROJECTS[slug].name + ' — Kodu Design Lab';
+    if (PROJECTS[slug]) document.title = PROJECTS[slug].name + ' — Kodu Studio';
     html.classList.add('intro-done');
     const text = built.querySelector('.project-text');
     if (text) {
@@ -839,7 +839,7 @@
     }, SWAP_AT);
 
     if (pushUrl) { depth = 1; history.pushState({ view: 'project', slug, depth }, '', siteUrl('projects/' + slug)); }
-    document.title = PROJECTS[slug].name + ' — Kodu Design Lab';
+    document.title = PROJECTS[slug].name + ' — Kodu Studio';
   }
 
   // Next project from within an open project (homepage context): swap pages, keep card state in sync
