@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.kodudesignlab.com/sitemap.xml
+Sitemap: https://www.kodustudio.com/sitemap.xml

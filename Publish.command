@@ -12,6 +12,6 @@ if git diff --cached --quiet; then
   echo "Nothing changed since the last publish."
 else
   git commit -q -m "Update projects ($(date '+%Y-%m-%d %H:%M'))"
-  git push -q origin main && echo "\n✓ Pushed — Vercel is deploying. Live in ~30s at https://www.kodudesignlab.com"
+  git push -q origin main && echo "\n✓ Pushed — Vercel is deploying. Live in ~30s at https://www.kodustudio.com"
 fi
 echo "\nPress any key to close."; read -k1

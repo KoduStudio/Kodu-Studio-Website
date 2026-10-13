@@ -13,7 +13,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
-const SITE = 'https://www.kodudesignlab.com';                  // canonical origin (no trailing slash)
+const SITE = 'https://www.kodustudio.com';                  // canonical origin (no trailing slash)
 const CONTENT = path.join(ROOT, 'content');
 const WIDTHS = [1200, 2000, 2800];        // page images
 const COVER_WIDTHS = [500, 1000, 1500];   // homepage card covers (pre-cropped to 6:8)

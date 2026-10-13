@@ -18,10 +18,21 @@
       "has": [
         {
           "type": "host",
+          "value": "(www\\.)?kodudesignlab\\.com"
+        }
+      ],
+      "destination": "https://www.kodustudio.com/$1",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
           "value": "kodu-design-lab.vercel.app"
         }
       ],
-      "destination": "https://www.kodudesignlab.com/$1",
+      "destination": "https://www.kodustudio.com/$1",
       "permanent": true
     }
   ]

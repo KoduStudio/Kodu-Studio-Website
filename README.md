@@ -21,4 +21,4 @@ drop a folder of images + a `project.json` into `content/`, then double-click **
 - `main.js` — intro animation, theme toggle, card → project transitions
 - `styles.css` — design tokens, layout, light/dark themes
 
-Live: https://www.kodudesignlab.com
+Live: https://www.kodustudio.com
