@@ -1,5 +1,6 @@
 # Source images and build tooling aren't needed on the live site
 content/
+logos/
 scripts/
 *.command
 README.md

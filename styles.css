@@ -127,6 +127,28 @@ img { display: block; max-width: 100%; }
 }
 /* "Kodu Studio" is short, so it uses the same per-letter stagger as the nav links */
 .brand__link.roll { --roll-step: 16ms; --roll-dur: 0.45s; }
+
+/* ---------- Brand logo ----------
+   The wordmark is painted as a mask filled with currentColor, so one file serves both
+   themes. It sits in the same 1.4em line box the text used, at the same cap height, and
+   rolls as one piece on hover (no per-letter stagger). */
+.brand__link--logo .roll__text {
+  height: 1.4em;                                  /* the line box the text occupied */
+  padding-top: 0.301em;                           /* lines the caps up with where the text sat */
+  transition: transform var(--roll-dur) cubic-bezier(0.22, 1, 0.36, 1);
+}
+.brand__link--logo:hover .roll__text,
+.brand__link--logo:focus-visible .roll__text { transform: translateY(-100%); }
+@media (hover: none) { .brand__link--logo .roll__text { transition: none; } }
+
+.brand__logo {
+  display: block;
+  height: 0.758em;                                /* glyphs match the text's 11.9px height */
+  aspect-ratio: 972.6 / 144.57;
+  background: currentColor;
+  -webkit-mask: url('icons/logo.svg') no-repeat center / 100% 100%;
+          mask: url('icons/logo.svg') no-repeat center / 100% 100%;
+}
 .roll:hover .char,
 .roll:focus-visible .char { transform: translateY(-100%); }
 @media (hover: none) { .roll .char { transition: none; } }

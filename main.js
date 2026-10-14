@@ -123,7 +123,7 @@
       el.appendChild(line);
     });
   }); }
-  rollify(document.querySelectorAll('.brand__link, .nav__item, .roll-target'));
+  rollify(document.querySelectorAll('.brand__link:not(.brand__link--logo), .nav__item, .roll-target'));
 
   /* ---------- CONTACT PANEL ----------
      "Contact" in the nav slides a panel in from the right and dims + blurs the page behind it.
