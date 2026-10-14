@@ -144,7 +144,7 @@ img { display: block; max-width: 100%; }
 .brand__logo {
   display: block;
   height: 0.758em;                                /* glyphs match the text's 11.9px height */
-  aspect-ratio: 972.61 / 144.57;
+  aspect-ratio: 968.23 / 144.57;
   background: currentColor;
   -webkit-mask: url('icons/logo.svg') no-repeat center / 100% 100%;
           mask: url('icons/logo.svg') no-repeat center / 100% 100%;
