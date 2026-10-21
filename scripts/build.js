@@ -16,10 +16,10 @@ const ROOT = path.resolve(__dirname, '..');
 const SITE = 'https://www.kodustudio.com';                  // canonical origin (no trailing slash)
 const CONTENT = path.join(ROOT, 'content');
 const WIDTHS = [1200, 2000, 2800];        // page images
-const COVER_WIDTHS = [500, 1000, 1500];   // homepage card covers (pre-cropped to 6:8)
+const COVER_WIDTHS = [500, 750, 1000, 1500];   // homepage card covers (pre-cropped to 6:8)
 const COVER_RATIO = 3 / 4;                // 6:8 card
 const QUALITY = 86;        // page images
-const COVER_QUALITY = 88;  // card covers are small files, so spend a little more on sharpness
+const COVER_QUALITY = 80;  // cards render at ~1/2 the pixel width, so quantisation is invisible
 // Filename hints → columns per row. New style: .2up / .3up (aspect comes from the image itself).
 // Old style still accepted: .portrait/.third/.poster (2, 3, 3 per row), .16-9/.16-10 (full width, fixed box).
 // .tall = tall images side by side at equal width, each at its own natural height (nothing cropped)
@@ -258,8 +258,15 @@ for (const f of fs.readdirSync(pagesDir)) if (f.endsWith('.html') && !wanted.has
 
 /* ---------- write homepage cards ---------- */
 const cardSizes = '(max-width: 699px) calc(90vw - 6px), (max-width: 1199px) calc(50vw - 25px), calc(16.66vw - 12px)';
+// A phone shows the card ~331px wide. Offering it nothing above 750w caps the download at a
+// little over 2x, which is past the point where more pixels are visible on a screen that size.
+const PHONE_CAP = 750;
+const phoneSizes = 'calc(90vw - 6px)';
 const cardHtml = cards.map(({ slug, meta, coverWidths }, i) => {
   const srcset = coverWidths.map((w) => `images/${slug}/cover-${w}.jpg ${w}w`).join(', ');
+  const phoneWidths = coverWidths.filter((w) => w <= PHONE_CAP);
+  const phoneSrcset = (phoneWidths.length ? phoneWidths : coverWidths.slice(0, 1))
+    .map((w) => `images/${slug}/cover-${w}.jpg ${w}w`).join(', ');
   const src = `images/${slug}/cover-${coverWidths[0]}.jpg`;
   const open = meta.draft
     ? `<div class="project-card project-card--draft">`
@@ -267,8 +274,12 @@ const cardHtml = cards.map(({ slug, meta, coverWidths }, i) => {
   const close = meta.draft ? '</div>' : '</a>';
   return `      ${open}
         <div class="project-card__media">
-          <img src="${src}" srcset="${srcset}" sizes="${cardSizes}"
-               alt="${escapeHtml(meta.name)}" loading="${i < 6 ? 'eager' : 'lazy'}" decoding="async">
+          <picture>
+            <source media="(max-width: 699px)" srcset="${phoneSrcset}" sizes="${phoneSizes}">
+            <img src="${src}" srcset="${srcset}" sizes="${cardSizes}"
+                 alt="${escapeHtml(meta.name)}" loading="${i < 2 ? 'eager' : 'lazy'}" decoding="async"
+                 fetchpriority="${i === 0 ? 'high' : 'low'}">
+          </picture>
         </div>
         <div class="project-card__meta">
           <div class="project-card__row">

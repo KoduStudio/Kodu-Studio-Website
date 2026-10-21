@@ -152,8 +152,8 @@
             '<span>Whether it\u2019s a brand that needs a look, a website that needs building, or just a rough idea you want to kick around, I\u2019d love to hear what you\u2019re working on.</span>' +
           '</p>' +
           '<div class="contact-panel__portrait">' +
-            '<img src="' + siteUrl('images/about/portrait-600.jpg') + '" ' +
-              'srcset="' + siteUrl('images/about/portrait-600.jpg') + ' 600w, ' + siteUrl('images/about/portrait-1120.jpg') + ' 1120w" ' +
+            '<img data-src="' + siteUrl('images/site/contact-320.jpg') + '" ' +
+              'data-srcset="' + siteUrl('images/site/contact-320.jpg') + ' 320w, ' + siteUrl('images/site/contact-480.jpg') + ' 480w" ' +
               'sizes="160px" alt="Lachlan Sarv" decoding="async">' +
           '</div>' +
         '</div>' +
@@ -176,9 +176,20 @@
     let contactOpen = false;
     let contactTl = null;
 
+    // The panel sits on every page, so its portrait is fetched only once it is opened
+    function loadPanelImage() {
+      const img = panel.querySelector('.contact-panel__portrait img');
+      if (!img || !img.dataset.src) return;
+      img.srcset = img.dataset.srcset;
+      img.src = img.dataset.src;
+      delete img.dataset.src;
+      delete img.dataset.srcset;
+    }
+
     function openContact() {
       if (contactOpen) return;
       contactOpen = true;
+      loadPanelImage();
       lockScroll('contact');
       setBackgroundInert(true);
       panel.scrollTop = 0;
@@ -643,7 +654,15 @@
   // Warm the cache with each project's hero image so the card → hero transition never waits on
   // the network. Uses the same srcset/sizes as the real hero so the browser fetches the exact
   // variant it will later display. Runs when the browser is idle, after the intro.
+  /* Warm the project heroes so a card click lands on an image that is already there.
+     This is a few MB at full size, so it is spent only where it is free: a wide screen on a
+     fast connection. Phones and metered connections fetch the hero when the project opens. */
   function preloadHeroes() {
+    const net = navigator.connection || {};
+    if (net.saveData) return;
+    if (/(^|-)(2g|3g)$/.test(net.effectiveType || '')) return;
+    if (matchMedia('(max-width: 1199px)').matches) return;
+
     const run = () => Object.values(PROJECTS).forEach((p) => {
       const im = p.images && p.images[0];
       if (!im) return;
