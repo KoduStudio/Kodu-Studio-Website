@@ -105,6 +105,15 @@
     });
   })();
 
+  /* ---------- Card images on a wide screen ----------
+     Cards after the second ship loading="lazy", which is what a phone wants: they sit
+     off-screen in the carousel. On the full row every card is meant to be visible at once,
+     but the intro starts them below the fold, so the browser would hold them back until the
+     animation carried them up. Promote them before that happens. */
+  if (matchMedia('(min-width: 1200px)').matches) {
+    document.querySelectorAll('.project-card__media img[loading="lazy"]').forEach((img) => { img.loading = 'eager'; });
+  }
+
   /* ---------- Rolling hover text for brand + nav links ---------- */
   function rollify(els) { els.forEach((el) => {
     const text = el.textContent.trim();
