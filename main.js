@@ -161,7 +161,7 @@
       '<div class="contact-panel__links">' +
         '<p class="contact-panel__label">Say hello</p>' +
         '<a class="contact-link" href="mailto:' + CONTACT_EMAIL + '"><span class="roll-target">' + CONTACT_EMAIL + '</span>' + arrow + '</a>' +
-        '<a class="contact-link contact-link--ext" href="https://www.instagram.com/lachlan.sarv/" target="_blank" rel="noopener"><span class="roll-target">Instagram</span>' + extArrow + '</a>' +
+        '<a class="contact-link contact-link--ext" href="https://www.instagram.com/kodudesignstudio/" target="_blank" rel="noopener"><span class="roll-target">Instagram</span>' + extArrow + '</a>' +
         '<a class="contact-link contact-link--ext" href="https://www.linkedin.com/in/lachlan-sarv-4192311a4/" target="_blank" rel="noopener"><span class="roll-target">LinkedIn</span>' + extArrow + '</a>' +
       '</div>';
     body.appendChild(scrim);
