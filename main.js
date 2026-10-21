@@ -177,9 +177,12 @@
             '<span>Whether it\u2019s a brand that needs a look, a website that needs building, or just a rough idea you want to kick around, I\u2019d love to hear what you\u2019re working on.</span>' +
           '</p>' +
           '<div class="contact-panel__portrait">' +
-            '<img data-src="' + siteUrl('images/site/contact-320.jpg') + '" ' +
-              'data-srcset="' + siteUrl('images/site/contact-320.jpg') + ' 320w, ' + siteUrl('images/site/contact-480.jpg') + ' 480w" ' +
-              'sizes="160px" alt="Lachlan Sarv" decoding="async">' +
+            '<picture>' +
+              '<source type="image/webp" data-srcset="' + siteUrl('images/site/contact-320.webp') + ' 320w, ' + siteUrl('images/site/contact-480.webp') + ' 480w" sizes="160px">' +
+              '<img data-src="' + siteUrl('images/site/contact-320.jpg') + '" ' +
+                'data-srcset="' + siteUrl('images/site/contact-320.jpg') + ' 320w, ' + siteUrl('images/site/contact-480.jpg') + ' 480w" ' +
+                'sizes="160px" alt="Lachlan Sarv" decoding="async">' +
+            '</picture>' +
           '</div>' +
         '</div>' +
       '</div>' +
@@ -205,6 +208,11 @@
     function loadPanelImage() {
       const img = panel.querySelector('.contact-panel__portrait img');
       if (!img || !img.dataset.src) return;
+      // the webp source has to be set before the img, or the browser picks the jpeg
+      panel.querySelectorAll('.contact-panel__portrait source[data-srcset]').forEach((s) => {
+        s.srcset = s.dataset.srcset;
+        delete s.dataset.srcset;
+      });
       img.srcset = img.dataset.srcset;
       img.src = img.dataset.src;
       delete img.dataset.src;
