@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Approach — Kodu Studio</title>
+  <meta name="description" content="How Kodu Studio works: strategy, design and build. Simple, performance driven websites by Lachlan Sarv, Newcastle NSW, built with Astro and Cloudflare.">
+  <link rel="canonical" href="https://www.kodustudio.com/approach">
+  <meta name="robots" content="index, follow">
+  <meta property="og:type" content="profile">
+  <meta property="og:site_name" content="Kodu Studio">
+  <meta property="og:title" content="Approach — Kodu Studio">
+  <meta property="og:description" content="How Kodu Studio works: strategy, design and build. Simple, performance driven websites by Lachlan Sarv, Newcastle NSW, built with Astro and Cloudflare.">
+  <meta property="og:url" content="https://www.kodustudio.com/approach">
+  <meta property="og:image" content="https://www.kodustudio.com/images/site/og-default.jpg?v=2">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Approach — Kodu Studio">
+  <meta name="twitter:description" content="How Kodu Studio works: strategy, design and build. Simple, performance driven websites by Lachlan Sarv, Newcastle NSW, built with Astro and Cloudflare.">
+  <meta name="twitter:image" content="https://www.kodustudio.com/images/site/og-default.jpg?v=2">
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('theme');
+        var theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="preload" href="fonts/PPNeueMontreal-Medium.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/PPNeueMontreal-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png?v=2">
+  <link rel="icon" type="image/png" sizes="64x64" href="icons/favicon-64.png?v=2">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png?v=2">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/favicon-192.png?v=2">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Google Analytics -->
+  <script>
+    // Loaded after the page has rendered so it never competes with the first paint
+    addEventListener('load', function () {
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-1S0M0656CN';
+      document.head.appendChild(s);
+    });
+  </script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-1S0M0656CN");
+  </script>
+  <!-- Vercel Web Analytics -->
+  <script>
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body data-view="approach" data-base="">
+
+  <header class="site-header">
+    <div class="brand">
+      <p class="brand__name">
+        <a class="brand__link brand__link--logo roll" href="./" aria-label="Kodu Studio">
+          <span class="roll__text" aria-hidden="true"><span class="brand__logo"></span></span>
+          <span class="roll__text roll__text--clone" aria-hidden="true"><span class="brand__logo"></span></span>
+        </a>
+      </p>
+      <p class="brand__tagline" aria-label="by Lachlan Sarv. Digital &amp; Graphic Design">
+        <span class="brand__swap" aria-hidden="true">
+          <span>by Lachlan Sarv</span>
+          <span>Digital &amp; Graphic Design</span>
+          <span>by Lachlan Sarv</span>
+        </span>
+      </p>
+    </div>
+
+    <nav class="nav" aria-label="Primary">
+      <a class="nav__item" href="approach">Approach</a>
+      <a class="nav__item" href="about">About</a>
+      <a class="nav__item" href="mailto:kodudesignstudio@gmail.com">Contact</a>
+      <button class="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false">
+        <!-- Moon: shown in light mode -->
+        <svg class="theme-toggle__icon theme-toggle__icon--moon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M7.72073 1.34218C8.12356 1.35277 8.42499 1.60501 8.56513 1.89817C8.7086 2.19845 8.70805 2.57935 8.50784 2.89882L8.50718 2.89817C8.1079 3.53727 7.93754 4.29331 8.02281 5.04205C8.10814 5.79091 8.44493 6.48892 8.97789 7.02187C9.51086 7.55475 10.2089 7.89102 10.9577 7.9763C11.7066 8.06154 12.4624 7.89074 13.1016 7.49127L13.2233 7.42552C13.5136 7.29372 13.8377 7.30784 14.1009 7.43333C14.4146 7.58289 14.6797 7.91683 14.6556 8.36041C14.5861 9.64627 14.1455 10.8846 13.3874 11.9255C12.6292 12.9665 11.5855 13.7657 10.3828 14.2263C9.18019 14.6868 7.86963 14.7894 6.61005 14.5212C5.35048 14.253 4.19585 13.6252 3.28518 12.7146C2.37448 11.804 1.7469 10.6493 1.47854 9.38971C1.2102 8.13009 1.31233 6.81967 1.77281 5.61692C2.23332 4.41416 3.03262 3.3707 4.07359 2.61236C5.11455 1.85406 6.35269 1.41304 7.6387 1.34348L7.72073 1.34218ZM7.08075 2.74713C6.2804 2.88698 5.51931 3.20816 4.8581 3.68984C4.02547 4.29646 3.38664 5.13143 3.01825 6.09348C2.64986 7.05567 2.56792 8.10403 2.78258 9.11171C2.99725 10.1194 3.4993 11.0434 4.22789 11.7719C4.95647 12.5004 5.88032 13.0026 6.88804 13.2172C7.89576 13.4317 8.94412 13.3494 9.90627 12.9809C10.8684 12.6123 11.7034 11.9732 12.3099 11.1404C12.7914 10.4793 13.1115 9.71849 13.2513 8.91835C12.489 9.26184 11.6451 9.39664 10.8067 9.30117C9.75816 9.18176 8.78073 8.71078 8.03453 7.96458C7.28839 7.21839 6.81734 6.2409 6.69794 5.19244C6.6025 4.3539 6.73709 3.50951 7.08075 2.74713Z" fill="currentColor"/>
+        </svg>
+        <!-- Sun: shown in dark mode -->
+        <svg class="theme-toggle__icon theme-toggle__icon--sun" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M10 8C10 6.89543 9.10457 6 8 6C6.89543 6 6 6.89543 6 8C6 9.10457 6.89543 10 8 10C9.10457 10 10 9.10457 10 8ZM11.3333 8C11.3333 9.84095 9.84095 11.3333 8 11.3333C6.15905 11.3333 4.66667 9.84095 4.66667 8C4.66667 6.15905 6.15905 4.66667 8 4.66667C9.84095 4.66667 11.3333 6.15905 11.3333 8Z" fill="currentColor"/>
+          <path d="M7.33333 2.66667V2C7.33333 1.63181 7.63181 1.33333 8 1.33333C8.36819 1.33333 8.66667 1.63181 8.66667 2V2.66667C8.66667 3.03486 8.36819 3.33333 8 3.33333C7.63181 3.33333 7.33333 3.03486 7.33333 2.66667Z" fill="currentColor"/>
+          <path d="M7.33333 14V13.3333C7.33333 12.9651 7.63181 12.6667 8 12.6667C8.36819 12.6667 8.66667 12.9651 8.66667 13.3333V14C8.66667 14.3682 8.36819 14.6667 8 14.6667C7.63181 14.6667 7.33333 14.3682 7.33333 14Z" fill="currentColor"/>
+          <path d="M2.66667 7.33333C3.03486 7.33333 3.33333 7.63181 3.33333 8C3.33333 8.36819 3.03486 8.66667 2.66667 8.66667H2C1.63181 8.66667 1.33333 8.36819 1.33333 8C1.33333 7.63181 1.63181 7.33333 2 7.33333H2.66667Z" fill="currentColor"/>
+          <path d="M14 7.33333C14.3682 7.33333 14.6667 7.63181 14.6667 8C14.6667 8.36819 14.3682 8.66667 14 8.66667H13.3333C12.9651 8.66667 12.6667 8.36819 12.6667 8C12.6667 7.63181 12.9651 7.33333 13.3333 7.33333H14Z" fill="currentColor"/>
+          <path d="M11.7713 3.28598C12.0317 3.02564 12.4537 3.02563 12.714 3.28598C12.9744 3.54633 12.9744 3.96834 12.714 4.22869L12.2427 4.70004C11.9823 4.96038 11.5603 4.96038 11.3 4.70004C11.0396 4.4397 11.0396 4.01768 11.3 3.75733L11.7713 3.28598Z" fill="currentColor"/>
+          <path d="M3.75733 11.3C4.01768 11.0396 4.4397 11.0396 4.70004 11.3C4.96038 11.5603 4.96038 11.9823 4.70004 12.2427L4.22869 12.714C3.96834 12.9744 3.54633 12.9744 3.28598 12.714C3.02563 12.4537 3.02564 12.0317 3.28598 11.7713L3.75733 11.3Z" fill="currentColor"/>
+          <path d="M3.28598 3.28598C3.54633 3.02563 3.96834 3.02563 4.22869 3.28598L4.70004 3.75733C4.96037 4.01768 4.96038 4.4397 4.70004 4.70004C4.4397 4.96038 4.01768 4.96037 3.75733 4.70004L3.28598 4.22869C3.02563 3.96834 3.02563 3.54633 3.28598 3.28598Z" fill="currentColor"/>
+          <path d="M11.3 11.3C11.5603 11.0396 11.9823 11.0396 12.2427 11.3L12.714 11.7713C12.9744 12.0317 12.9744 12.4537 12.714 12.714C12.4537 12.9744 12.0317 12.9744 11.7713 12.714L11.3 12.2427C11.0396 11.9823 11.0396 11.5603 11.3 11.3Z" fill="currentColor"/>
+        </svg>
+      </button>
+    </nav>
+  </header>
+
+  <main class="approach" id="top">
+
+    <section class="approach-intro">
+      <p class="approach-intro__text" data-split>Every project starts from the same brief: a site that looks considered and has a real job to do. It should tell your story, show people what sets your brand apart, and point visitors toward the next step.</p>
+    </section>
+
+    <section class="approach-block">
+      <div class="approach-header">
+        <h1 class="approach-header__title">My Approach</h1>
+      </div>
+
+        <div class="approach-row">
+          <p class="approach-row__num">(01)</p>
+          <h2 class="approach-row__name">Strategy</h2>
+          <div class="approach-row__content">
+            <p class="approach-row__text">I start with the offer, the market and the people you are trying to reach, then shape what I find into positioning and a message that makes your value obvious in seconds.</p>
+            <ul class="tag-list">
+              <li class="tag">Discovery &amp; Research</li>
+              <li class="tag">Brand Positioning</li>
+              <li class="tag">Messaging &amp; Narrative</li>
+              <li class="tag">Information Architecture</li>
+              <li class="tag">UX</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="approach-row">
+          <p class="approach-row__num">(02)</p>
+          <h2 class="approach-row__name">Design</h2>
+          <div class="approach-row__content">
+            <p class="approach-row__text">I design in Figma and keep it simple on purpose. Clear hierarchy, generous space and restraint where it counts, so the brand carries the page and visitors get one obvious reason to act.</p>
+            <ul class="tag-list">
+              <li class="tag">Art Direction</li>
+              <li class="tag">Website Design</li>
+              <li class="tag">Brand Identity</li>
+              <li class="tag">Design Systems</li>
+              <li class="tag">Prototyping</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="approach-row">
+          <p class="approach-row__num">(03)</p>
+          <h2 class="approach-row__name">Build</h2>
+          <div class="approach-row__content">
+            <p class="approach-row__text">I build the site to hold every detail of the design and to load fast on a phone, because a site that looks sharp and arrives slowly still loses people.</p>
+            <ul class="tag-list">
+              <li class="tag">Astro</li>
+              <li class="tag">Cloudflare</li>
+              <li class="tag">Webflow</li>
+              <li class="tag">Core Web Vitals</li>
+              <li class="tag">Accessibility</li>
+            </ul>
+          </div>
+        </div>
+    </section>
+
+    <figure class="approach-band">
+      <picture>
+        <source type="image/webp" srcset="images/courtside-wines/01-tote-1200.webp 1200w, images/courtside-wines/01-tote-2880.webp 2880w" sizes="100vw">
+        <img src="images/courtside-wines/01-tote-1200.jpg" srcset="images/courtside-wines/01-tote-1200.jpg 1200w, images/courtside-wines/01-tote-2880.jpg 2880w" sizes="100vw" alt="Courtside Wines tote bag" loading="lazy" decoding="async">
+      </picture>
+    </figure>
+
+    <section class="faq">
+      <div class="faq__header">
+        <h2 class="faq__title">FAQs</h2>
+        <p class="faq__lead">The questions that come up before most projects, answered properly. The short version: most sites take eight to twelve weeks, and you deal with me the whole way through.</p>
+      </div>
+
+      <ul class="faq__list">
+          <li class="faq-item">
+            <button class="faq-item__q" type="button" aria-expanded="false" aria-controls="faq-01">
+              <span class="faq-item__num">(01)</span>
+              <h3 class="faq-item__heading">How long does a project take?</h3>
+              <span class="faq-item__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+              </span>
+            </button>
+            <div class="faq-item__a" id="faq-01" role="region">
+              <p>A single page site is usually three to four weeks. A full site with brand work behind it runs eight to twelve. Most of that is strategy and design; the build is the quick part. I take on a small number of projects at a time, so yours is never sitting in a queue.</p>
+            </div>
+          </li>
+          <li class="faq-item">
+            <button class="faq-item__q" type="button" aria-expanded="false" aria-controls="faq-02">
+              <span class="faq-item__num">(02)</span>
+              <h3 class="faq-item__heading">How do you build the sites?</h3>
+              <span class="faq-item__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+              </span>
+            </button>
+            <div class="faq-item__a" id="faq-02" role="region">
+              <p>Most of them are built with Astro and deployed on Cloudflare. Astro ships next to no JavaScript, so pages arrive as plain HTML and start rendering straight away, and Cloudflare serves them from a data centre near whoever is loading the site. The result is a site that feels instant on a phone on mobile data, which is where most of your visitors are. When a project needs a CMS you can edit yourself, I build it in Webflow and apply the same thinking.</p>
+            </div>
+          </li>
+          <li class="faq-item">
+            <button class="faq-item__q" type="button" aria-expanded="false" aria-controls="faq-03">
+              <span class="faq-item__num">(03)</span>
+              <h3 class="faq-item__heading">What does it cost?</h3>
+              <span class="faq-item__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+              </span>
+            </button>
+            <div class="faq-item__a" id="faq-03" role="region">
+              <p>Every project is quoted as a fixed fee once we have scoped it on a call, so there are no hourly surprises. Cost tracks the size of the site and how much brand and strategy work sits behind it. If there is a budget you need to stay inside, say so early and I will tell you honestly what fits.</p>
+            </div>
+          </li>
+          <li class="faq-item">
+            <button class="faq-item__q" type="button" aria-expanded="false" aria-controls="faq-04">
+              <span class="faq-item__num">(04)</span>
+              <h3 class="faq-item__heading">What do you need from me?</h3>
+              <span class="faq-item__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+              </span>
+            </button>
+            <div class="faq-item__a" id="faq-04" role="region">
+              <p>Time early on, and the truth about your business. A kickoff call, whatever you already have (logos, photography, copy, analytics), and one person who can give feedback and make decisions. If copy or photography is missing, I will tell you before we start rather than halfway through.</p>
+            </div>
+          </li>
+          <li class="faq-item">
+            <button class="faq-item__q" type="button" aria-expanded="false" aria-controls="faq-05">
+              <span class="faq-item__num">(05)</span>
+              <h3 class="faq-item__heading">Do you look after the site after launch?</h3>
+              <span class="faq-item__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+              </span>
+            </button>
+            <div class="faq-item__a" id="faq-05" role="region">
+              <p>Yes, if you want. Hosting on Cloudflare is inexpensive, and I can keep it running, make changes as you need them and keep an eye on performance. If you would rather own it outright, I hand the whole thing over with documentation and no lock in.</p>
+            </div>
+          </li>
+          <li class="faq-item">
+            <button class="faq-item__q" type="button" aria-expanded="false" aria-controls="faq-06">
+              <span class="faq-item__num">(06)</span>
+              <h3 class="faq-item__heading">Can you work with my existing brand or team?</h3>
+              <span class="faq-item__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+              </span>
+            </button>
+            <div class="faq-item__a" id="faq-06" role="region">
+              <p>Often, yes. If you have a brand you are happy with, I work inside it rather than reinventing it. If you have a developer or an internal marketing team, I can design and hand over, or build alongside them.</p>
+            </div>
+          </li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p class="site-footer__brand">
+      <a class="site-footer__logo-link" href="./" aria-label="Kodu Studio"><span class="brand__logo"></span></a>
+    </p>
+    <p class="site-footer__time"><span data-local-time>NTL</span></p>
+    <p class="site-footer__contact"><a class="js-contact" href="mailto:kodudesignstudio@gmail.com">Contact</a></p>
+    <p class="site-footer__top"><a href="#top" data-back-to-top>Back to top</a></p>
+  </footer>
+
+  <script src="vendor/gsap-3.12.5.min.js"></script>
+  <script src="vendor/lenis-1.3.26.min.js"></script>
+  <script src="projects.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

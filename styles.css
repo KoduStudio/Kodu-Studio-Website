@@ -27,7 +27,22 @@
   --wrapper-pad-bottom: 40px;
 
   --label-lg: 16px;
+  --label-md: 14px;
   --body-font: 'PP Neue Montreal', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+  /* Type scale, fluid between a 390px phone and the 1512px design width */
+  --h3: clamp(1.875rem, 1.223rem + 2.674vw, 3.75rem);      /* 30 → 60 */
+  --h5: clamp(1.5rem,   1.239rem + 1.070vw, 2.25rem);      /* 24 → 36 */
+  --h6: clamp(1.25rem,  1.033rem + 0.891vw, 1.875rem);     /* 20 → 30 */
+  --body-lg: clamp(1.0625rem, 0.911rem + 0.624vw, 1.5rem); /* 17 → 24 */
+
+  /* Section rhythm */
+  --section-lg: clamp(3.5rem, 2.284rem + 4.99vw, 7rem);    /* 56 → 112 */
+  --section-xl: clamp(4.5rem, 2.936rem + 6.42vw, 9rem);    /* 72 → 144 */
+  --intro-top:  clamp(6.5rem, 4.240rem + 9.27vw, 13rem);   /* 104 → 208 */
+
+  --neutral-200: #e4e4e7;
+  --rule: #e4e4e7;
 
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   color-scheme: light;
@@ -38,6 +53,8 @@
   --text-primary: #f2f2f2;
   --text-muted: #a1a1aa;
   --card-placeholder: #2c2c30;
+  --neutral-200: #2b2b2f;
+  --rule: #2f2f33;
   color-scheme: dark;
 }
 
@@ -790,3 +807,331 @@ html.lock-scroll { overflow: hidden; }
   .contact-panel__portrait { width: clamp(96px, 26vw, 140px); }
 }
 /* END CONTACT PANEL */
+
+
+/* =====================================================================================
+   APPROACH PAGE
+   Same 12-column grid as the About page (6 on a phone), 20px margins, 10px gutters.
+   ===================================================================================== */
+.approach { flex: 1 0 auto; }
+
+/* The grid every block on this page sits on */
+.approach-grid,
+.approach-header,
+.approach-row,
+.faq__header,
+.faq-item__q {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--column-gap);
+  align-items: start;
+}
+
+/* ---------- Intro ---------- */
+.approach-intro {
+  padding: var(--intro-top) var(--margin-main) var(--section-xl);
+}
+.approach-intro__text {
+  font-weight: 500;
+  font-size: var(--h3);
+  line-height: 1.1;
+  color: var(--text-primary);
+  /* First line starts at column 5: four columns plus the four gutters before it */
+  text-indent: calc(4 * ((100% - 11 * var(--column-gap)) / 12) + 4 * var(--column-gap));
+}
+
+/* ---------- Approach block ---------- */
+.approach-block {
+  padding: var(--section-lg) var(--margin-main) var(--section-xl);
+}
+.approach-header {
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--rule);
+}
+.approach-header__title {
+  grid-column: 5 / 11;
+  margin: 0;
+  font-weight: 500;
+  font-size: var(--h5);
+  line-height: 1.24;
+  color: var(--text-primary);
+}
+
+.approach-row {
+  padding-top: 16px;
+  padding-bottom: 56px;
+  border-top: 1px solid var(--rule);
+}
+.approach-row:first-of-type { border-top: 0; }
+.approach-row:last-of-type { padding-bottom: 0; }
+.approach-row__num,
+.approach-row__name,
+.approach-row__text {
+  font-size: var(--h6);
+  line-height: 1.3;
+  color: var(--text-primary);
+  font-weight: 400;
+}
+.approach-row__num  { grid-column: 1; grid-row: 1; }
+.approach-row__name { grid-column: 5; grid-row: 1; margin: 0; }
+.approach-row__content {
+  grid-column: 8 / 13;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ---------- Tags ---------- */
+.tag-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.tag {
+  padding: 5px 8px;
+  border-radius: 5px;
+  background: var(--neutral-200);
+  font-size: var(--label-md);
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+/* ---------- Full-bleed band ---------- */
+.approach-band {
+  margin: 0;
+  width: 100%;
+  aspect-ratio: 21 / 9;
+  overflow: hidden;
+  background: var(--card-placeholder);
+}
+.approach-band img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ---------- FAQ ---------- */
+.faq {
+  padding: var(--section-xl) var(--margin-main) var(--section-lg);
+}
+.faq__header {
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--rule);
+}
+.faq__title {
+  grid-column: 1 / 5;
+  grid-row: 1;
+  margin: 0;
+  font-weight: 500;
+  font-size: var(--h5);
+  line-height: 1.24;
+  color: var(--text-primary);
+}
+.faq__lead {
+  grid-column: 5 / 11;
+  grid-row: 1;
+  font-weight: 500;
+  font-size: var(--h5);
+  line-height: 1.24;
+  color: var(--text-primary);
+}
+.faq__list { list-style: none; margin: 0; padding: 0; }
+.faq-item { border-bottom: 1px solid var(--rule); }
+
+.faq-item__q {
+  width: 100%;
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 24px 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.faq-item__num {
+  grid-column: 1 / 5;
+  grid-row: 1;
+  font-size: var(--body-lg);
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+.faq-item__heading {
+  grid-column: 5 / 11;
+  grid-row: 1;
+  margin: 0;
+  font-weight: 400;
+  font-size: var(--body-lg);
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+.faq-item__icon {
+  grid-column: 12;
+  grid-row: 1;
+  justify-self: end;
+  width: 32px;
+  height: 32px;
+  color: var(--text-primary);
+  transition: transform 0.45s var(--ease-out);
+}
+.faq-item__icon svg { width: 100%; height: 100%; display: block; }
+.faq-item__q[aria-expanded='true'] .faq-item__icon { transform: rotate(45deg); }
+
+.faq-item__a {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--column-gap);
+  padding-bottom: 40px;
+}
+.faq-item__a p {
+  grid-column: 5 / 11;
+  font-size: var(--body-lg);
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+/* Collapsed only once JS is running, so the answers are readable without it */
+.faq--js .faq-item__a { overflow: hidden; height: 0; padding-bottom: 0; }
+
+/* ---------- Footer ---------- */
+.site-footer {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--column-gap);
+  align-items: center;
+  padding: var(--margin-main);
+  font-size: var(--label-lg);
+  color: var(--text-primary);
+  flex: 0 0 auto;
+}
+.site-footer p { margin: 0; }
+.site-footer__brand   { grid-column: 1 / 3; }
+.site-footer__time    { grid-column: 3 / 5; color: var(--text-muted); }
+.site-footer__contact { grid-column: 5 / 7; }
+.site-footer__top     { grid-column: 11 / 13; justify-self: end; }
+.site-footer__logo-link { display: block; width: 104px; }
+.site-footer__logo-link .brand__logo { margin: 0; height: 16px; }
+
+/* ---------- Approach: tablet ---------- */
+@media (max-width: 1199px) {
+  .approach-header__title { grid-column: 5 / 13; }
+  .approach-row__content  { grid-column: 7 / 13; }
+  .faq__lead,
+  .faq-item__heading,
+  .faq-item__a p { grid-column: 5 / 12; }
+}
+
+/* ---------- Approach: phone (6 columns) ---------- */
+@media (max-width: 899px) {
+  .approach-grid,
+  .approach-header,
+  .approach-row,
+  .faq__header,
+  .faq-item__q,
+  .faq-item__a,
+  .site-footer {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .approach-intro__text { text-indent: 0; }
+
+  .approach-header__title { grid-column: 1 / 7; }
+  .approach-row { padding-bottom: 40px; row-gap: 20px; }
+  .approach-row__num  { grid-column: 1 / 2; }
+  .approach-row__name { grid-column: 2 / 7; }
+  .approach-row__content { grid-column: 1 / 7; grid-row: 2; gap: 20px; }
+
+  .faq__title { grid-column: 1 / 7; margin-bottom: 20px; }
+  .faq__lead  { grid-column: 1 / 7; grid-row: 2; }
+  .faq-item__num { grid-column: 1 / 2; }
+  .faq-item__heading { grid-column: 2 / 6; }
+  .faq-item__icon { grid-column: 6; width: 24px; height: 24px; }
+  .faq-item__a p { grid-column: 2 / 7; }
+
+  .site-footer { row-gap: 12px; }
+  .site-footer__brand   { grid-column: 1 / 4; }
+  .site-footer__top     { grid-column: 4 / 7; justify-self: end; }
+  .site-footer__time    { grid-column: 1 / 4; }
+  .site-footer__contact { grid-column: 4 / 7; justify-self: end; }
+}
+/* END APPROACH PAGE */
+
+/* =====================================================================================
+   MOBILE MENU
+   Below the carousel breakpoint the nav links collapse to [theme toggle] [Menu] and the
+   links move into a full-screen panel. Delete this block and the MOBILE MENU section in
+   main.js to remove.
+   ===================================================================================== */
+.nav__menu {
+  display: none;
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.menu-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  display: flex;
+  flex-direction: column;
+  padding: var(--margin-main);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  transform: translateX(100%);
+  visibility: hidden;
+  overscroll-behavior: contain;
+}
+.menu-panel__bar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  font-size: var(--label-lg);
+}
+.menu-panel__brand { margin: 0; font-weight: 500; }
+.menu-panel__close {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.menu-panel__label {
+  margin: 0;
+  padding-bottom: 12px;
+  margin-top: clamp(3rem, 12vh, 6rem);
+  border-bottom: 1px solid var(--rule);
+  color: var(--text-muted);
+  font-size: var(--label-lg);
+}
+.menu-panel__nav {
+  display: flex;
+  flex-direction: column;
+  padding-top: 24px;
+}
+.menu-panel__nav a {
+  font-weight: 500;
+  font-size: var(--h5);
+  line-height: 1.3;
+  color: var(--text-primary);
+}
+.menu-panel__email {
+  margin: auto 0 0;
+  font-size: var(--label-lg);
+  color: var(--text-primary);
+  word-break: break-word;
+}
+
+@media (max-width: 699px) {
+  .nav__item { display: none; }
+  .nav__menu { display: block; }
+  /* the toggle sits to the left of the word Menu */
+  .nav { gap: 16px; }
+}
+/* END MOBILE MENU */

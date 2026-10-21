@@ -340,6 +340,7 @@ const today = new Date().toISOString().slice(0, 10);
 const urls = [
   { loc: `${SITE}/`, priority: '1.0' },
   { loc: `${SITE}/about`, priority: '0.8' },
+  { loc: `${SITE}/approach`, priority: '0.8' },
   ...Object.keys(data).map((slug) => ({ loc: `${SITE}/projects/${slug}`, priority: '0.7' })),
 ];
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>

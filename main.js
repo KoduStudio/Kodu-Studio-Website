@@ -155,7 +155,8 @@
      Built here so it exists on every page without duplicating markup. Delete this block and
      the matching CSS to remove; the nav link falls back to its plain mailto: href. */
   const CONTACT_EMAIL = 'kodudesignstudio@gmail.com';
-  const contactTrigger = document.querySelector('.nav__item[href^="mailto:"]');
+  const contactTriggers = [...document.querySelectorAll('.nav__item[href^="mailto:"], .js-contact')];
+  const contactTrigger = contactTriggers[0];
   if (contactTrigger) {
     const arrow = lucide('<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>');              // arrow-right
     const extArrow = lucide('<path d="M7 7h10v10"/><path d="M7 17 17 7"/>');             // arrow-up-right
@@ -247,7 +248,7 @@
       contactTrigger.focus({ preventScroll: true });
     }
 
-    contactTrigger.addEventListener('click', (e) => { e.preventDefault(); openContact(); });
+    contactTriggers.forEach((t) => t.addEventListener('click', (e) => { e.preventDefault(); openContact(); }));
     closeBtn.addEventListener('click', closeContact);
     scrim.addEventListener('click', closeContact);
     addEventListener('keydown', (e) => { if (e.key === 'Escape' && contactOpen) closeContact(); });
@@ -618,6 +619,150 @@
     return;
   }
 
+  /* ---------- FAQ accordion (Approach page) ----------
+     The answers are plain visible markup; JS collapses them, so without it the page still
+     reads as a straightforward Q&A list. */
+  const faqList = document.querySelector('.faq__list');
+  if (faqList) {
+    faqList.classList.add('faq--js');
+    const items = [...faqList.querySelectorAll('.faq-item')];
+
+    const setOpen = (item, open, animate = true) => {
+      const btn = item.querySelector('.faq-item__q');
+      const panel = item.querySelector('.faq-item__a');
+      btn.setAttribute('aria-expanded', String(open));
+      const target = open ? panel.scrollHeight + 40 : 0;   /* 40 = the padding it gets back */
+      if (!animate || reduceMotion || typeof gsap === 'undefined') {
+        panel.style.height = open ? 'auto' : '0px';
+        panel.style.paddingBottom = open ? '40px' : '0px';
+        return;
+      }
+      gsap.to(panel, {
+        height: target ? target : 0,
+        paddingBottom: open ? 40 : 0,
+        duration: 0.5,
+        ease: 'power3.inOut',
+        onComplete() { if (open) panel.style.height = 'auto'; },
+      });
+    };
+
+    items.forEach((item) => {
+      const btn = item.querySelector('.faq-item__q');
+      btn.addEventListener('click', () => {
+        const open = btn.getAttribute('aria-expanded') === 'true';
+        // one at a time, like the design
+        if (!open) items.forEach((other) => { if (other !== item) setOpen(other, false); });
+        setOpen(item, !open);
+      });
+      setOpen(item, false, false);
+    });
+  }
+
+  /* ---------- Footer: the time in Newcastle ---------- */
+  const clock = document.querySelector('[data-local-time]');
+  if (clock) {
+    const fmt = new Intl.DateTimeFormat('en-AU', {
+      hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Australia/Sydney',
+    });
+    const tick = () => { clock.textContent = 'NTL ' + fmt.format(new Date()).toUpperCase().replace(/\s/g, ''); };
+    tick();
+    setInterval(tick, 30000);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) tick(); });
+  }
+
+  /* ---------- Back to top ---------- */
+  const toTop = document.querySelector('[data-back-to-top]');
+  if (toTop) {
+    toTop.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (lenis) lenis.scrollTo(0, { duration: 1.1 }); else window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  /* ---------- MOBILE MENU ----------
+     Below the carousel breakpoint the nav collapses to [theme toggle] [Menu], and Menu opens
+     a full-screen panel. Built here so it exists on every page. Delete this block and the
+     matching CSS to remove. */
+  const nav = document.querySelector('.nav');
+  if (nav) {
+    const menuBtn = document.createElement('button');
+    menuBtn.className = 'nav__menu';
+    menuBtn.type = 'button';
+    menuBtn.setAttribute('aria-expanded', 'false');
+    menuBtn.innerHTML = '<span class="roll-target">Menu</span>';
+    nav.appendChild(menuBtn);
+    rollify(menuBtn.querySelectorAll('.roll-target'));
+
+    const panel = document.createElement('div');
+    panel.className = 'menu-panel';
+    panel.setAttribute('role', 'dialog');
+    panel.setAttribute('aria-modal', 'true');
+    panel.setAttribute('aria-label', 'Menu');
+    panel.innerHTML =
+      '<div class="menu-panel__bar">' +
+        '<p class="menu-panel__brand">Kodu Studio</p>' +
+        '<button class="menu-panel__close" type="button"><span class="roll-target">Close</span></button>' +
+      '</div>' +
+      '<p class="menu-panel__label">Navigate</p>' +
+      '<nav class="menu-panel__nav" aria-label="Mobile">' +
+        '<a href="' + siteUrl('./') + '">Work</a>' +
+        '<a href="' + siteUrl('approach') + '">Approach</a>' +
+        '<a href="' + siteUrl('about') + '">About</a>' +
+        '<a class="js-menu-contact" href="mailto:' + CONTACT_EMAIL + '">Contact</a>' +
+      '</nav>' +
+      '<p class="menu-panel__email"><a href="mailto:' + CONTACT_EMAIL + '">' + CONTACT_EMAIL + '</a></p>';
+    body.appendChild(panel);
+    rollify(panel.querySelectorAll('.roll-target'));
+
+    const closeBtn = panel.querySelector('.menu-panel__close');
+    let menuOpen = false;
+    let menuTl = null;
+
+    const setMenuInert = (on) => {
+      document.querySelectorAll('.site-header, main, .site-footer').forEach((el) => { el.inert = on; });
+    };
+
+    function openMenu() {
+      if (menuOpen) return;
+      menuOpen = true;
+      menuBtn.setAttribute('aria-expanded', 'true');
+      lockScroll('menu');
+      setMenuInert(true);
+      gsap.set(panel, { visibility: 'visible' });
+      if (menuTl) menuTl.kill();
+      menuTl = gsap.timeline()
+        .fromTo(panel, { xPercent: 100, x: 0 }, { xPercent: 0, x: 0, duration: 0.6, ease: 'power3.out' });
+      closeBtn.focus({ preventScroll: true });
+    }
+
+    function closeMenu(then) {
+      if (!menuOpen) return;
+      menuOpen = false;
+      menuBtn.setAttribute('aria-expanded', 'false');
+      setMenuInert(false);
+      if (menuTl) menuTl.kill();
+      menuTl = gsap.timeline({
+        onComplete() { gsap.set(panel, { visibility: 'hidden' }); unlockScroll('menu'); if (then) then(); },
+      }).to(panel, { xPercent: 100, x: 0, duration: 0.45, ease: 'power3.in' });
+      menuBtn.focus({ preventScroll: true });
+    }
+
+    menuBtn.addEventListener('click', () => (menuOpen ? closeMenu() : openMenu()));
+    closeBtn.addEventListener('click', () => closeMenu());
+    addEventListener('keydown', (e) => { if (e.key === 'Escape' && menuOpen) closeMenu(); });
+    // Contact inside the menu hands over to the contact panel
+    const menuContact = panel.querySelector('.js-menu-contact');
+    if (menuContact) menuContact.addEventListener('click', (e) => {
+      e.preventDefault();
+      closeMenu(() => { const t = document.querySelector('.nav__item[href^="mailto:"]'); if (t) t.click(); });
+    });
+    // A plain link leaving the page should not leave the scroll locked
+    panel.querySelectorAll('.menu-panel__nav a:not(.js-menu-contact)').forEach((a) => {
+      a.addEventListener('click', () => { unlockScroll('menu'); setMenuInert(false); });
+    });
+  }
+  /* ---------- END MOBILE MENU ---------- */
+
   /* ---------- About page ---------- */
   if (body.dataset.view === 'about') {
     const brandLines = gsap.utils.toArray('.brand > *');
@@ -678,6 +823,46 @@
       at += 0.35;
       tl.to(eyebrows[lineSets.length + 1], { opacity: 1, y: 0, duration: 0.6, force3D: false }, at)
         .to(linkItems, { opacity: 1, y: 0, duration: 0.7, stagger: 0.07, force3D: false }, at + 0.1);
+    });
+    return;
+  }
+
+  /* ---------- Approach page ----------
+     Same load-in as the About page: nav first, then the opening statement rises line by
+     line. The rest of the page is static, so nothing below is animated. */
+  if (body.dataset.view === 'approach') {
+    const brandLines = gsap.utils.toArray('.brand > *');
+    const navItems = gsap.utils.toArray('.nav > *');
+    const lead = document.querySelector('.approach-intro__text');
+
+    html.classList.add('is-loading');
+    const ready = document.fonts ? document.fonts.ready : Promise.resolve();
+    ready.then(() => {
+      if (reduceMotion || typeof gsap === 'undefined') {
+        html.classList.remove('is-loading'); html.classList.add('intro-done'); return;
+      }
+
+      const lines = lead ? splitLines(lead) : [];
+      gsap.set(brandLines, { y: 14, opacity: 0 });
+      gsap.set(navItems, { y: 14, opacity: 0 });
+      if (lines.length) gsap.set(lines, { yPercent: 110 });
+      html.classList.remove('is-loading');
+
+      const tl = gsap.timeline({
+        defaults: { ease: 'power3.out' },
+        onComplete() {
+          html.classList.add('intro-done');
+          gsap.set([brandLines, navItems], { clearProps: 'transform,opacity' });
+          // back to plain text so the big type renders crisp
+          if (lead && lead.dataset.text) lead.textContent = lead.dataset.text;
+        },
+      });
+      window.koduIntro = tl;
+      addEventListener('resize', () => { if (tl.isActive()) tl.progress(1); }, { once: true });
+
+      tl.to(brandLines, { y: 0, opacity: 1, duration: 0.9, stagger: 0.08, force3D: false }, 0.1)
+        .to(navItems, { y: 0, opacity: 1, duration: 0.9, stagger: 0.06, force3D: false }, 0.3);
+      if (lines.length) tl.to(lines, { yPercent: 0, duration: 1.0, stagger: 0.09, force3D: false }, 0.35);
     });
     return;
   }
@@ -1035,4 +1220,6 @@
       if (card) openProject(card, state.slug, false);
     }
   });
+
+
 })();
