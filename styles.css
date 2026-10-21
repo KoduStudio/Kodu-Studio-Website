@@ -31,7 +31,7 @@
   --body-font: 'PP Neue Montreal', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 
   /* Type scale, fluid between a 390px phone and the 1512px design width */
-  --h3: clamp(1.875rem, 1.223rem + 2.674vw, 3.75rem);      /* 30 → 60 */
+  --h3: clamp(1.875rem, 1.223rem + 2.674vw, 5.5rem);       /* 30 → 60 at 1512 → 88 at 2560 */
   --h5: clamp(1.5rem,   1.239rem + 1.070vw, 2.25rem);      /* 24 → 36 */
   --h6: clamp(1.25rem,  1.033rem + 0.891vw, 1.875rem);     /* 20 → 30 */
   --body-lg: clamp(1.0625rem, 0.911rem + 0.624vw, 1.5rem); /* 17 → 24 */
