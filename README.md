@@ -8,7 +8,26 @@ See **[content/HOW-TO-ADD-A-PROJECT.md](content/HOW-TO-ADD-A-PROJECT.md)**. Shor
 drop a folder of images + a `project.json` into `content/`, then double-click **Publish.command**.
 
 - **Preview.command** — build + open a local preview at http://localhost:5173
-- **Publish.command** — build + commit + push (Vercel auto-deploys from `main`)
+- **Publish.command** — build + commit + push the branch you are on
+
+## Staging
+
+Vercel builds every branch, so anything that isn't `main` deploys to its own URL and
+leaves the live site alone.
+
+```bash
+git checkout staging      # or: git checkout -b whatever-you-are-changing
+```
+
+Make the changes, then double-click **Publish.command**. It pushes the branch you are on
+and tells you whether that went to the live site or to a preview. The preview URL is in
+the Vercel dashboard under Deployments, or on the branch page in GitHub.
+
+When it looks right, merge it into `main` to go live:
+
+```bash
+git checkout main && git merge staging && git push origin main
+```
 
 ## Structure
 
