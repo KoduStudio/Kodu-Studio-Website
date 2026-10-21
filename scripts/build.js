@@ -19,7 +19,8 @@ const WIDTHS = [1200, 2000, 2800];        // page images
 const COVER_WIDTHS = [500, 750, 1000, 1500];   // homepage card covers (pre-cropped to 6:8)
 const COVER_RATIO = 3 / 4;                // 6:8 card
 const QUALITY = 86;        // page images
-const COVER_QUALITY = 80;  // cards render at ~1/2 the pixel width, so quantisation is invisible
+const COVER_QUALITY = 88;  // jpeg is only the fallback now, so it keeps the original quality
+const WEBP_QUALITY = 86;   // what virtually every browser actually downloads: ~1/3 the jpeg bytes
 // Filename hints → columns per row. New style: .2up / .3up (aspect comes from the image itself).
 // Old style still accepted: .portrait/.third/.poster (2, 3, 3 per row), .16-9/.16-10 (full width, fixed box).
 // .tall = tall images side by side at equal width, each at its own natural height (nothing cropped)
@@ -27,6 +28,25 @@ const HINTS = { '2up': 2, '3up': 3, tall: 'tall', full: 1, portrait: 2, third: 3
 
 const log = (...a) => console.log(...a);
 const warn = (...a) => console.warn('  ⚠︎', ...a);
+
+// WebP is what browsers actually fetch; the jpeg beside it stays as the fallback.
+// Without cwebp the build still works, it just ships jpeg only.
+const HAS_CWEBP = (() => {
+  try { execFileSync('cwebp', ['-version'], { stdio: 'ignore' }); return true; }
+  catch { return false; }
+})();
+let webpMade = 0;
+const missing = [];
+
+function webpFor(jpg) {
+  if (!HAS_CWEBP) return false;
+  const out = jpg.replace(/\.jpg$/, '.webp');
+  if (fs.existsSync(out) && fs.statSync(out).mtimeMs >= fs.statSync(jpg).mtimeMs) return true;
+  execFileSync('cwebp', ['-q', String(WEBP_QUALITY), '-m', '6', '-quiet', jpg, '-o', out]);
+  webpMade++;
+  return true;
+}
+
 
 /* ---------- helpers ---------- */
 function imageSize(file) {
@@ -139,6 +159,7 @@ for (const p of projects) {
       if (needsBuild(src, dest)) resizeCover(src, dest, maxCoverW, size);
       coverWidths.push(maxCoverW);
     }
+    coverWidths.forEach((w) => webpFor(path.join(outDir, `cover-${w}.jpg`)));
     cards.push({ slug: p.slug, meta: p.meta, coverWidths });
     log(`  cover ← ${coverFile}  [${coverWidths.join(', ')}]`);
   }
@@ -180,6 +201,7 @@ for (const p of projects) {
       const bigger = widths.slice(i + 1).map((w) => fs.statSync(path.join(outDir, `${f.slug}-${w}.jpg`)).size);
       if (fs.statSync(small).size >= Math.min(...bigger)) { fs.unlinkSync(small); widths.splice(i, 1); }
     }
+    widths.forEach((w) => webpFor(path.join(outDir, `${f.slug}-${w}.jpg`)));
     images.push({
       src: `images/${p.slug}/${f.slug}`,
       widths,
@@ -222,11 +244,18 @@ for (const p of projects) {
   };
 
   // Remove stale generated files for this project
+  const coverWs = cards.find((c) => c.slug === p.slug)?.coverWidths || [];
   const keep = new Set([
-    ...images.flatMap((im) => im.widths.map((w) => `${path.basename(im.src)}-${w}.jpg`)),
-    ...(cards.find((c) => c.slug === p.slug)?.coverWidths || []).map((w) => `cover-${w}.jpg`),
+    ...images.flatMap((im) => im.widths.flatMap((w) => [`${path.basename(im.src)}-${w}.jpg`, `${path.basename(im.src)}-${w}.webp`])),
+    ...coverWs.flatMap((w) => [`cover-${w}.jpg`, `cover-${w}.webp`]),
   ]);
   for (const f of fs.readdirSync(outDir)) if (!keep.has(f)) fs.unlinkSync(path.join(outDir, f));
+
+  // Every variant the markup will reference must actually be on disk. OneDrive sometimes
+  // renames files it is mid-sync ("cover-750 2.webp"), which would ship a dangling <source>.
+  for (const f of keep) {
+    if (!fs.existsSync(path.join(outDir, f))) missing.push(`images/${p.slug}/${f}`);
+  }
 }
 
 /* ---------- write projects.js ---------- */
@@ -263,10 +292,13 @@ const cardSizes = '(max-width: 699px) calc(90vw - 6px), (max-width: 1199px) calc
 const PHONE_CAP = 750;
 const phoneSizes = 'calc(90vw - 6px)';
 const cardHtml = cards.map(({ slug, meta, coverWidths }, i) => {
-  const srcset = coverWidths.map((w) => `images/${slug}/cover-${w}.jpg ${w}w`).join(', ');
+  const set = (widths, ext) => widths.map((w) => `images/${slug}/cover-${w}.${ext} ${w}w`).join(', ');
   const phoneWidths = coverWidths.filter((w) => w <= PHONE_CAP);
-  const phoneSrcset = (phoneWidths.length ? phoneWidths : coverWidths.slice(0, 1))
-    .map((w) => `images/${slug}/cover-${w}.jpg ${w}w`).join(', ');
+  const phone = phoneWidths.length ? phoneWidths : coverWidths.slice(0, 1);
+  const srcset = set(coverWidths, 'jpg');
+  const phoneSrcset = set(phone, 'jpg');
+  const webpSrcset = HAS_CWEBP ? set(coverWidths, 'webp') : null;
+  const phoneWebp = HAS_CWEBP ? set(phone, 'webp') : null;
   const src = `images/${slug}/cover-${coverWidths[0]}.jpg`;
   const open = meta.draft
     ? `<div class="project-card project-card--draft">`
@@ -275,7 +307,7 @@ const cardHtml = cards.map(({ slug, meta, coverWidths }, i) => {
   return `      ${open}
         <div class="project-card__media">
           <picture>
-            <source media="(max-width: 699px)" srcset="${phoneSrcset}" sizes="${phoneSizes}">
+${phoneWebp ? `            <source type="image/webp" media="(max-width: 699px)" srcset="${phoneWebp}" sizes="${phoneSizes}">\n` : ''}${webpSrcset ? `            <source type="image/webp" srcset="${webpSrcset}" sizes="${cardSizes}">\n` : ''}            <source media="(max-width: 699px)" srcset="${phoneSrcset}" sizes="${phoneSizes}">
             <img src="${src}" srcset="${srcset}" sizes="${cardSizes}"
                  alt="${escapeHtml(meta.name)}" loading="${i < 2 ? 'eager' : 'lazy'}" decoding="async"
                  fetchpriority="${i === 0 ? 'high' : 'low'}">
@@ -317,4 +349,12 @@ ${urls.map((u) => `  <url><loc>${u.loc}</loc><lastmod>${today}</lastmod><priorit
 `;
 fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), sitemap);
 
+if (webpMade) log(`  ${webpMade} webp variant(s) encoded`);
+if (missing.length) {
+  console.error(`\n✗ ${missing.length} expected image file(s) are missing:`);
+  missing.forEach((f) => console.error('   ' + f));
+  console.error('  Check for OneDrive conflict copies ("name 2.webp") and run the build again.');
+  process.exit(1);
+}
+if (!HAS_CWEBP) warn('cwebp not found — shipping jpeg only (brew install webp)');
 log(`\n✓ Built ${Object.keys(data).length} project page(s), ${cards.length} homepage card(s), sitemap with ${urls.length} URLs.`);

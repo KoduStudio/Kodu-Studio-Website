@@ -89,6 +89,22 @@
     if (href && !/^(https?:|mailto:|#)/.test(href)) a.href = siteUrl(href);
   });
 
+  /* ---------- Card images: make their URLs absolute ----------
+     They are written relative in index.html. Opening a project pushes /projects/<slug> into
+     the address bar, and any later re-run of the picture/srcset selection (a resize, a DPR
+     change, the media query flipping) would resolve them against that URL instead. */
+  (() => {
+    const absSet = (list) => list.split(',').map((part) => {
+      const [url, ...rest] = part.trim().split(/\s+/);
+      return url ? [siteUrl(url), ...rest].join(' ') : '';
+    }).filter(Boolean).join(', ');
+    document.querySelectorAll('.project-card__media source, .project-card__media img').forEach((el) => {
+      if (el.getAttribute('srcset')) el.setAttribute('srcset', absSet(el.getAttribute('srcset')));
+      const src = el.getAttribute('src');
+      if (src) el.setAttribute('src', siteUrl(src));
+    });
+  })();
+
   /* ---------- Rolling hover text for brand + nav links ---------- */
   function rollify(els) { els.forEach((el) => {
     const text = el.textContent.trim();
@@ -385,8 +401,19 @@
     2: '(max-width: 699px) calc(100vw - 40px), calc(50vw - 30px)',
     3: '(max-width: 699px) calc(100vw - 40px), calc(33.33vw - 27px)',
   };
-  function imageSrcset(img) {
-    return img.widths.map((w) => `${siteUrl(img.src + '-' + w + '.jpg')} ${w}w`).join(', ');
+  function imageSrcset(img, ext = 'jpg') {
+    return img.widths.map((w) => `${siteUrl(img.src + '-' + w + '.' + ext)} ${w}w`).join(', ');
+  }
+  // Wrap an <img> so browsers take the webp and everything else falls back to the jpg
+  function withWebp(img, el) {
+    const pic = document.createElement('picture');
+    const source = document.createElement('source');
+    source.type = 'image/webp';
+    source.srcset = imageSrcset(img, 'webp');
+    source.sizes = el.sizes;
+    pic.appendChild(source);
+    pic.appendChild(el);
+    return pic;
   }
   function largestSrc(img) {
     return siteUrl(img.src + '-' + Math.max(...img.widths) + '.jpg');
@@ -415,7 +442,7 @@
       el.decoding = 'async';
       const markLoaded = () => el.classList.add('is-loaded');
       if (el.complete && el.naturalWidth) markLoaded(); else el.addEventListener('load', markLoaded, { once: true });
-      fig.appendChild(el);
+      fig.appendChild(withWebp(img, el));
       page.appendChild(fig);
       if (i === 0) { const text = buildProjectText(data); if (text) page.appendChild(text); }
     });
@@ -439,7 +466,7 @@
         a.dataset.next = nextSlug;
         a.innerHTML = `<p class="next-project__eyebrow">(Next Project)</p>
           <h2 class="next-project__name">${esc(next.name)}</h2>
-          <div class="next-project__window"><div class="next-project__media"><img src="${largestSrc(nextHero)}" srcset="${imageSrcset(nextHero)}" sizes="(max-width: 899px) calc(100vw - 40px), 900px" alt="" loading="lazy" decoding="async"></div></div>`;
+          <div class="next-project__window"><div class="next-project__media"><picture><source type="image/webp" srcset="${imageSrcset(nextHero, 'webp')}" sizes="(max-width: 899px) calc(100vw - 40px), 900px"><img src="${largestSrc(nextHero)}" srcset="${imageSrcset(nextHero)}" sizes="(max-width: 899px) calc(100vw - 40px), 900px" alt="" loading="lazy" decoding="async"></picture></div></div>`;
         page.appendChild(a);
       }
     }
