@@ -2,4 +2,5 @@
 .vercel
 .claude/
 node_modules/
-*.fetch        # OneDrive hydration artifacts
+# OneDrive hydration artifacts
+*.fetch
