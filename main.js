@@ -1083,15 +1083,25 @@
     if (/(^|-)(2g|3g)$/.test(net.effectiveType || '')) return;
     if (matchMedia('(max-width: 1199px)').matches) return;
 
+    /* Warm the webp, not the jpg. The jpg only exists as a fallback for browsers that
+       cannot take webp, and it is far heavier — one hero is 3.5MB as jpg against 0.31MB
+       as webp, and warming all six in jpg pulled 5.5MB. The cards on this page have
+       already negotiated the format through their <picture>, so their chosen file says
+       whether this browser takes webp without needing a separate feature test. */
+    const card = document.querySelector('.project-card img');
+    const ext = card && /\.webp(\?|$)/.test(card.currentSrc) ? 'webp' : 'jpg';
+
     const run = () => Object.values(PROJECTS).forEach((p) => {
       const im = p.images && p.images[0];
       if (!im) return;
       const i = new Image();
       i.sizes = SIZES[1];
-      i.srcset = imageSrcset(im);
-      i.src = largestSrc(im);
+      i.srcset = imageSrcset(im, ext);
+      i.src = siteUrl(`${im.src}-${Math.max(...im.widths)}.${ext}`);
     });
-    if ('requestIdleCallback' in window) requestIdleCallback(run, { timeout: 2000 }); else setTimeout(run, 500);
+    // Speculative, so it waits for a genuinely idle moment rather than elbowing in at
+    // the 2s mark, which landed inside the window that still counts against the page.
+    if ('requestIdleCallback' in window) requestIdleCallback(run, { timeout: 6000 }); else setTimeout(run, 3000);
   }
 
   function runIntro() {
