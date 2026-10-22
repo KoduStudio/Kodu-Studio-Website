@@ -958,10 +958,10 @@
     return;
   }
 
-  /* ---------- Approach page ----------
+  /* ---------- Approach and Privacy pages ----------
      Same load-in as the About page: nav first, then the opening statement rises line by
      line. The rest of the page is static, so nothing below is animated. */
-  if (body.dataset.view === 'approach') {
+  if (body.dataset.view === 'approach' || body.dataset.view === 'privacy') {
     const brandLines = gsap.utils.toArray('.brand > *');
     const navItems = gsap.utils.toArray('.nav > *');
     const lead = document.querySelector('.page-intro__text');
