@@ -45,6 +45,7 @@
   --h5: clamp(1.5rem,   1.239rem + 1.070vw, 2.25rem);      /* 24 → 36 */
   --h6: clamp(1.25rem,  1.033rem + 0.891vw, 1.875rem);     /* 20 → 30 */
   --body-lg: clamp(1.0625rem, 0.911rem + 0.624vw, 1.5rem); /* 17 → 24 */
+  --body-md: clamp(0.9375rem, 0.742rem + 0.802vw, 1.5rem); /* 15 → 24 */
 
   /* Section rhythm */
   --section-lg: clamp(3.5rem, 2.284rem + 4.99vw, 7rem);    /* 56 → 112 */
@@ -349,7 +350,7 @@ html.lenis, html.lenis body { height: auto; }
 .about__eyebrow {
   grid-column: 5 / 7;
   font-weight: 500;
-  font-size: 18px;
+  font-size: clamp(0.9375rem, 0.744rem + 0.794vw, 1.125rem);   /* 15 → 18 */
   line-height: 1.5;
   color: var(--text-primary);
 }
@@ -360,7 +361,7 @@ html.lenis, html.lenis body { height: auto; }
 .about__lead {
   max-width: 62ch;   /* keep measure comfortable on very wide screens */
   font-weight: 500;
-  font-size: 18px;
+  font-size: var(--body-md);
   line-height: 1.5;
   color: var(--text-primary);
 }
@@ -370,7 +371,7 @@ html.lenis, html.lenis body { height: auto; }
   margin: 0;
   padding: 0;
   font-weight: 500;
-  font-size: 18px;
+  font-size: var(--body-md);
   line-height: 1.5;
   color: var(--text-primary);
 }
@@ -384,7 +385,7 @@ html.lenis, html.lenis body { height: auto; }
   flex-direction: column;
   align-items: flex-start;
   font-weight: 500;
-  font-size: 18px;
+  font-size: var(--body-md);
   line-height: 1.5;
   color: var(--text-primary);
 }
