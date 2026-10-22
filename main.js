@@ -1130,13 +1130,18 @@
     // On mobile the stack sits at 80% so there's breathing room around it before it fans out.
     const belowViewport = window.innerHeight;
     const stackScale = mobileMQ.matches ? 0.8 : 1;
+    /* On a phone the cards are the biggest thing on the page, so every moment they spend
+       travelling up from below the fold is counted as the page still loading. There, the
+       stack assembles where it stands — bottom card first, the rest fading in over it in
+       the order they are stacked — and then fans out as usual. Desktop keeps the slide. */
+    const stackInPlace = mobileMQ.matches;
     cards.forEach((card, i) => {
       gsap.set(card, {
         x: offsets[i].x,
-        y: offsets[i].y + belowViewport,
-        scale: stackScale * 0.96,
+        y: offsets[i].y + (stackInPlace ? 0 : belowViewport),
+        scale: stackScale * (stackInPlace ? 1 : 0.96),
         rotation: (i - (cards.length - 1) / 2) * 1.5,
-        opacity: 1,
+        opacity: stackInPlace ? 0 : 1,
         zIndex: cards.length - i,
         transformOrigin: '50% 50%',
       });
@@ -1155,43 +1160,59 @@
     });
     window.koduIntro = tl; // handy for scrubbing in devtools
 
-    // 1. Cards slide up from below the viewport and settle stacked in the centre (0 → ~1.25s)
-    tl.to(cards, {
-      y: (i) => offsets[i].y,
-      scale: stackScale,
-      duration: 1.0,
-      ease: 'power3.out',
-      stagger: 0.05,
-    }, 0);
+    // Phones run the same choreography on a shorter clock, since the cards landing late
+    // is what the page is judged on. Desktop timings are unchanged.
+    const T = stackInPlace
+      ? { navAt: 0.15, navAt2: 0.3, spreadAt: 0.5, spreadDur: 0.9, metaAt: 0.95, metaDur: 0.6 }
+      : { navAt: 0.35, navAt2: 0.6, spreadAt: 1.05, spreadDur: 1.3, metaAt: 1.9, metaDur: 0.8 };
 
-    // 2. Nav appears while the cards are mid-slide — top-left first, then the right side
-    tl.to(brandLines, { y: 0, opacity: 1, duration: 0.9, stagger: 0.08, force3D: false }, 0.35)
-      .to(navItems, { y: 0, opacity: 1, duration: 0.9, stagger: 0.06, force3D: false }, 0.6);
+    // 1. The stack arrives. On a phone it fades up in place, bottom card first, so each
+    //    card appears over the one before it; elsewhere it slides up from below the fold.
+    if (stackInPlace) {
+      tl.to(cards, {
+        opacity: 1,
+        duration: 0.35,
+        ease: 'power2.out',
+        stagger: { each: 0.06, from: 'end' },   // 'end' is the bottom of the stack
+      }, 0);
+    } else {
+      tl.to(cards, {
+        y: (i) => offsets[i].y,
+        scale: stackScale,
+        duration: 1.0,
+        ease: 'power3.out',
+        stagger: 0.05,
+      }, 0);
+    }
 
-    // 3. Spread starts while the slide-up is still settling so the two motions blend with no pause (1.05s → ~2.55s)
+    // 2. Nav appears while the stack is still arriving — top-left first, then the right side
+    tl.to(brandLines, { y: 0, opacity: 1, duration: 0.9, stagger: 0.08, force3D: false }, T.navAt)
+      .to(navItems, { y: 0, opacity: 1, duration: 0.9, stagger: 0.06, force3D: false }, T.navAt2);
+
+    // 3. Spread starts before the stack has fully settled so the two motions blend with no pause
     tl.to(cards, {
       x: 0,
       y: 0,
       scale: 1,          // mobile: grow from the 80% stack to full size as they spread
       rotation: 0,
-      duration: 1.3,
+      duration: T.spreadDur,
       ease: 'power3.inOut',
       stagger: { each: 0.04, from: 'center' },
       onComplete() {
         gsap.set(cards, { clearProps: 'transform,zIndex,opacity' });
       },
-    }, 1.05);
+    }, T.spreadAt);
 
     // 4. Card text fades in as the spread settles
     tl.to(cardMeta, {
       opacity: 1,
-      duration: 0.8,
+      duration: T.metaDur,
       ease: 'power2.out',
       stagger: { each: 0.04, from: 'center' },
       onComplete() {
         gsap.set(cardMeta, { clearProps: 'opacity' });
       },
-    }, 1.9);
+    }, T.metaAt);
   }
 
   // Wait for fonts so measured card positions are final
