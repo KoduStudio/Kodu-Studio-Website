@@ -1029,7 +1029,7 @@ html.lock-scroll { overflow: hidden; }
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--column-gap);
   align-items: center;
-  padding: var(--section-lg) var(--margin-main) var(--margin-main);
+  padding: clamp(3.5rem, 1.241rem + 9.27vw, 10rem) var(--margin-main) var(--margin-main);   /* 56 → 160 */
   font-size: var(--label-lg);
   color: var(--text-primary);
   flex: 0 0 auto;
