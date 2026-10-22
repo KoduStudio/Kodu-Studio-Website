@@ -659,19 +659,40 @@
   }
 
   /* ---------- Scroll reveals ----------
-     Each marked block fades up once as it comes into view. Plain CSS transitions driven by
-     an IntersectionObserver, so there is no scroll handler and nothing to throttle. */
-  const revealItems = document.querySelectorAll('[data-reveal]');
+     Each marked block fades up once as it comes into view. These hide real content, so the
+     observer is backed by a sweep that reveals anything already on screen: if the observer
+     never fires, the worst case is no animation rather than an invisible page. */
+  const revealItems = [...document.querySelectorAll('[data-reveal]')];
   if (revealItems.length && !reduceMotion && 'IntersectionObserver' in window) {
     html.classList.add('reveal-ready');
+    const pending = new Set(revealItems);
+
+    const show = (el) => {
+      el.classList.add('is-in');
+      io.unobserve(el);
+      pending.delete(el);
+    };
+
     const io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => {
-        if (!e.isIntersecting) return;
-        e.target.classList.add('is-in');
-        io.unobserve(e.target);           // once only
-      });
+      entries.forEach((e) => { if (e.isIntersecting) show(e.target); });
     }, { rootMargin: '0px 0px -12% 0px', threshold: 0.08 });
+
+    const sweep = () => {
+      if (!pending.size) {
+        removeEventListener('scroll', sweep);
+        if (lenis) lenis.off('scroll', sweep);
+        return;
+      }
+      [...pending].forEach((el) => {
+        const r = el.getBoundingClientRect();
+        if (r.top < innerHeight && r.bottom > 0) show(el);
+      });
+    };
+
     revealItems.forEach((el) => io.observe(el));
+    addEventListener('scroll', sweep, { passive: true });
+    if (lenis) lenis.on('scroll', sweep);
+    setTimeout(sweep, 1500);          // nothing on screen stays hidden
   }
 
   /* ---------- Parallax ----------
