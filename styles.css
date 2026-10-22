@@ -917,6 +917,7 @@ html.lock-scroll { overflow: hidden; }
   color: var(--text-primary);
   font-weight: 400;
 }
+.approach-row__text + .approach-row__text { margin-top: 0.8em; }
 .approach-row__num  { grid-column: 1; grid-row: 1; }
 .approach-row__name { grid-column: 5; grid-row: 1; margin: 0; }
 .approach-row__content {
@@ -1029,6 +1030,8 @@ html.lock-scroll { overflow: hidden; }
   line-height: 1.4;
   color: var(--text-muted);
 }
+/* An answer written with a blank line in the Studio comes through as two paragraphs */
+.faq-item__a p + p { margin-top: 0.8em; }
 /* Collapsed only once JS is running, so the answers are readable without it */
 .faq--js .faq-item__a { overflow: hidden; height: 0; padding-bottom: 0; }
 
@@ -1281,6 +1284,7 @@ html.lock-scroll { overflow: hidden; }
   line-height: 1.4;
   color: var(--text-muted);
 }
+.policy-item__text + .policy-item__text { margin-top: 0.8em; }
 
 @media (max-width: 1199px) {
   .policy-item__body { grid-column: 5 / 12; }

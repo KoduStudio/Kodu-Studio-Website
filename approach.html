@@ -104,14 +104,19 @@
   <main class="approach" id="top">
 
     <section class="page-intro page-intro--serif">
+      <!-- copy:approach.intro -->
       <p class="page-intro__text" data-split>Every project starts from the same brief: a site that looks considered and has a real job to do. It should tell your story, show people what sets your brand apart, and point visitors toward the next step.</p>
+      <!-- copy:end -->
     </section>
 
     <section class="approach-block">
       <div class="approach-header" data-reveal>
+        <!-- copy:approach.heading -->
         <h1 class="approach-header__title">My Approach</h1>
+        <!-- copy:end -->
       </div>
 
+        <!-- copy:approach.steps -->
         <div class="approach-row" data-reveal>
           <p class="approach-row__num">(01)</p>
           <h2 class="approach-row__name">Strategy</h2>
@@ -156,6 +161,7 @@
             </ul>
           </div>
         </div>
+        <!-- copy:end -->
     </section>
 
     <figure class="approach-band">
@@ -168,10 +174,13 @@
     <section class="faq">
       <div class="faq__header" data-reveal>
         <h2 class="faq__title">FAQs</h2>
-        <p class="faq__lead">The questions that come up before most projects, answered properly. The short version: most sites take eight to twelve weeks, and you deal with me the whole way through.</p>
+        <!-- copy:approach.faqIntro -->
+        <p class="faq__lead">Here are the questions that come up before most projects. If there is more you would like to know, feel free to reach out and contact me.</p>
+        <!-- copy:end -->
       </div>
 
       <ul class="faq__list">
+          <!-- copy:approach.faqs -->
           <li class="faq-item" data-reveal>
             <button class="faq-item__q" type="button" aria-expanded="false" aria-controls="faq-01">
               <span class="faq-item__num">(01)</span>
@@ -181,7 +190,7 @@
               </span>
             </button>
             <div class="faq-item__a" id="faq-01" role="region">
-              <p>A single page site is usually three to four weeks. A full site with brand work behind it runs eight to twelve. Most of that is strategy and design; the build is the quick part. I take on a small number of projects at a time, so yours is never sitting in a queue.</p>
+              <p>A single page site is usually three to four weeks. A full site with brand work behind it runs eight to twelve. Most of that is strategy and design; the build is the quick part. I take only a small number of client projects per year, so yours is never sitting in a queue and gets my full attention.</p>
             </div>
           </li>
           <li class="faq-item" data-reveal>
@@ -193,7 +202,8 @@
               </span>
             </button>
             <div class="faq-item__a" id="faq-02" role="region">
-              <p>Most of them are built with Astro and deployed on Cloudflare. Astro ships next to no JavaScript, so pages arrive as plain HTML and start rendering straight away, and Cloudflare serves them from a data centre near whoever is loading the site. The result is a site that feels instant on a phone on mobile data, which is where most of your visitors are. On larger builds, or anything with a lot of custom functionality, I bring in a developer I work with so the code holds up as well as the design does.</p>
+              <p>Most of my sites are built with Astro and hosted on Cloudflare, so they load fast, even on a phone with patchy reception. I focus on simple, well-designed sites that do their job without fuss, and for bigger or more custom projects I bring in a developer I trust.</p>
+              <p>If you’d like to update your own content later, depending on the size of your project I can set you up with Sanity, a simple editor for changing text and images yourself.</p>
             </div>
           </li>
           <li class="faq-item" data-reveal>
@@ -244,6 +254,7 @@
               <p>Often, yes. If you have a brand you are happy with, I work inside it rather than reinventing it. If you have a developer or an internal marketing team, I can design and hand over, or build alongside them.</p>
             </div>
           </li>
+          <!-- copy:end -->
       </ul>
     </section>
 
@@ -263,6 +274,7 @@
   <script src="vendor/gsap-3.12.5.min.js"></script>
   <script src="vendor/lenis-1.3.26.min.js"></script>
   <script src="projects.js"></script>
+  <script src="site.js"></script>
   <script src="main.js"></script>
 </body>
 </html>

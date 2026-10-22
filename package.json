@@ -1,0 +1,11 @@
+{
+  "name": "kodu-studio-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static site. No dependencies — the build uses only what Node ships with.",
+  "scripts": {
+    "build": "node scripts/build-copy.js && node scripts/build-pages.js",
+    "build:all": "node scripts/build.js"
+  },
+  "engines": { "node": ">=18" }
+}

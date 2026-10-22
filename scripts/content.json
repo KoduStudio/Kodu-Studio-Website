@@ -1,0 +1,137 @@
+{
+  "about": {
+    "body": "I design websites and digital products from first sketch to final build, alongside brand identities and print. I like work that feels calm, considered and easy to use, and I’m just as interested in how something moves as how it looks. If you’d like to talk design, or just want to say hi, I’d love to hear from you.",
+    "intro": "Hey, I’m Lachlan Sarv, and welcome to Kodu Studio. I’m a digital & graphic designer from Newcastle, NSW. I’m the Lead UI/UX Designer at BEECH Agency, and Kodu Studio showcases agency work I’ve been a part of, client work, and personal projects.",
+    "services": [
+      "Website & UI Design",
+      "Design Systems (Figma)",
+      "Interactive Prototypes (Figma)",
+      "Vibe Coding (Claude Code)",
+      "Brand Identity",
+      "Graphic Design & Print"
+    ]
+  },
+  "approach": {
+    "approachHeading": "My Approach",
+    "faqIntro": "Here are the questions that come up before most projects. If there is more you would like to know, feel free to reach out and contact me.",
+    "faqs": [
+      {
+        "answer": "A single page site is usually three to four weeks. A full site with brand work behind it runs eight to twelve. Most of that is strategy and design; the build is the quick part. I take only a small number of client projects per year, so yours is never sitting in a queue and gets my full attention.",
+        "question": "How long does a project take?"
+      },
+      {
+        "answer": "Most of my sites are built with Astro and hosted on Cloudflare, so they load fast, even on a phone with patchy reception. I focus on simple, well-designed sites that do their job without fuss, and for bigger or more custom projects I bring in a developer I trust.\n\nIf you’d like to update your own content later, depending on the size of your project I can set you up with Sanity, a simple editor for changing text and images yourself.",
+        "question": "How do you build the sites?"
+      },
+      {
+        "answer": "Every project is quoted as a fixed fee once we have scoped it on a call, so there are no hourly surprises. Cost tracks the size of the site and how much brand and strategy work sits behind it. If there is a budget you need to stay inside, say so early and I will tell you honestly what fits.",
+        "question": "What does it cost?"
+      },
+      {
+        "answer": "Time early on, and the truth about your business. A kickoff call, whatever you already have (logos, photography, copy, analytics), and one person who can give feedback and make decisions. If copy or photography is missing, I will tell you before we start rather than halfway through.",
+        "question": "What do you need from me?"
+      },
+      {
+        "answer": "Yes, if you want. Hosting on Cloudflare is inexpensive, and I can keep it running, make changes as you need them and keep an eye on performance. If you would rather own it outright, I hand the whole thing over with documentation and no lock in.",
+        "question": "Do you look after the site after launch?"
+      },
+      {
+        "answer": "Often, yes. If you have a brand you are happy with, I work inside it rather than reinventing it. If you have a developer or an internal marketing team, I can design and hand over, or build alongside them.",
+        "question": "Can you work with my existing brand or team?"
+      }
+    ],
+    "intro": "Every project starts from the same brief: a site that looks considered and has a real job to do. It should tell your story, show people what sets your brand apart, and point visitors toward the next step.",
+    "steps": [
+      {
+        "description": "I start with the offer, the market and the people you are trying to reach, then shape what I find into positioning and a message that makes your value obvious in seconds.",
+        "name": "Strategy",
+        "tags": [
+          "Discovery & Research",
+          "Brand Positioning",
+          "Messaging & Narrative",
+          "Information Architecture",
+          "UX"
+        ]
+      },
+      {
+        "description": "I design in Figma and keep it simple on purpose. Clear hierarchy, generous space and restraint where it counts, so the brand carries the page and visitors get one obvious reason to act.",
+        "name": "Design",
+        "tags": [
+          "Art Direction",
+          "Website Design",
+          "Brand Identity",
+          "Design Systems",
+          "Prototyping"
+        ]
+      },
+      {
+        "description": "I build the site to hold every detail of the design and to load fast on a phone, because a site that looks sharp and arrives slowly still loses people.",
+        "name": "Build",
+        "tags": [
+          "Astro",
+          "Cloudflare",
+          "Vibe Coding (Claude Code)",
+          "Core Web Vitals",
+          "Accessibility"
+        ]
+      }
+    ]
+  },
+  "privacy": {
+    "lastUpdated": "2026-10-22",
+    "sections": [
+      {
+        "body": "At kodustudio.com I collect as little as I can get away with: enough to know which work people look at, and nothing more. This policy sets out what is collected, why, and what happens to it. There are no forms on this site, nothing is sold, and nothing is shared beyond the services listed below.",
+        "heading": "Privacy Policy"
+      },
+      {
+        "body": "Kodu Studio, run by Lachlan Sarv in Newcastle, NSW, Australia. If you have a question about any of this, or you want something removed, email kodudesignstudio@gmail.com and it comes straight to me.",
+        "heading": "Who is responsible for your data?"
+      },
+      {
+        "body": "The site uses Google Analytics 4 and Vercel Web Analytics to count visits and see which projects get looked at. Between them they record the pages you view, roughly where in the world you are, and the browser and device you are on. It tells me what is worth showing more of. It is not used to identify you, and I never try to. Google processes this data on my behalf, and you can opt out of it entirely with Google’s browser add-on.",
+        "heading": "Analytics"
+      },
+      {
+        "body": "Google Analytics sets cookies so it can tell a returning visit from a new one. The site itself saves exactly one thing in your browser: whether you chose light or dark mode. That never leaves your device and is not sent anywhere.",
+        "heading": "Cookies and local storage"
+      },
+      {
+        "body": "The site is hosted on Vercel and served through their network. Like any web host, their servers keep standard request logs that include IP addresses, for security and reliability.",
+        "heading": "Hosting"
+      },
+      {
+        "body": "One project page embeds a YouTube video through youtube-nocookie.com, which stops YouTube setting tracking cookies unless you actually press play. If you do play it, YouTube’s own privacy policy takes over from there.",
+        "heading": "Embedded video"
+      },
+      {
+        "body": "The typefaces are served from this site rather than from a font provider, so loading a page does not quietly tell a third party that you visited.",
+        "heading": "Fonts"
+      },
+      {
+        "body": "You can ask what is held about you and ask for it to be deleted, and you can opt out of the analytics at any time using an ad blocker, your browser’s tracking protection, or Google’s opt-out add-on. Nothing on this site breaks if you do. Email me and I will sort out anything else.",
+        "heading": "Your rights"
+      },
+      {
+        "body": "If any of this changes, the date at the top of the page changes with it.",
+        "heading": "Changes to this policy"
+      }
+    ],
+    "title": "Privacy Policy"
+  },
+  "settings": {
+    "contactHeading": "Like what you see? Let’s talk.",
+    "contactIntro": "Whether it’s a brand that needs a look, a website that needs building, or just a rough idea you want to kick around, I’d love to hear what you’re working on.",
+    "email": "kodudesignstudio@gmail.com",
+    "socialLinks": [
+      {
+        "label": "Instagram",
+        "url": "https://www.instagram.com/kodudesignstudio/"
+      },
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/lachlan-sarv-4192311a4/"
+      }
+    ]
+  }
+}

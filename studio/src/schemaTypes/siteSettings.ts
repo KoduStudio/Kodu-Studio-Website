@@ -16,11 +16,18 @@ export const siteSettings = defineType({
       validation: (rule) => rule.required().email(),
     }),
     defineField({
+      name: 'contactHeading',
+      title: 'Contact panel opening line',
+      type: 'string',
+      description: 'The first line of the contact panel, set in the full-strength text colour.',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
       name: 'contactIntro',
       title: 'Contact panel text',
       type: 'text',
       rows: 4,
-      description: 'The paragraph in the slide-out contact panel.',
+      description: 'The rest of the paragraph, which follows the opening line in a lighter tone.',
       validation: (rule) => rule.required(),
     }),
     defineField({

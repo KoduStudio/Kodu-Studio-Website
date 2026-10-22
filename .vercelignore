@@ -1,7 +1,7 @@
-# Source images and build tooling aren't needed on the live site
+# Source material and tooling the live site doesn't need.
+# scripts/ is NOT listed: Vercel runs the copy + page build from it on every deploy.
 content/
 logos/
-scripts/
 studio/
 *.command
 README.md

@@ -154,7 +154,18 @@
      "Contact" in the nav slides a panel in from the right and dims + blurs the page behind it.
      Built here so it exists on every page without duplicating markup. Delete this block and
      the matching CSS to remove; the nav link falls back to its plain mailto: href. */
-  const CONTACT_EMAIL = 'kodudesignstudio@gmail.com';
+  /* Written by the build from Sanity (see site.js), with the current values as the
+     fallback so the panel still reads correctly if that file ever fails to load. */
+  const SITE = window.KODU_SITE || {};
+  const CONTACT_EMAIL = SITE.email || 'kodudesignstudio@gmail.com';
+  const CONTACT_HEADING = SITE.contactHeading || 'Like what you see? Let\u2019s talk.';
+  const CONTACT_INTRO = SITE.contactIntro ||
+    'Whether it\u2019s a brand that needs a look, a website that needs building, or just a rough idea you want to kick around, I\u2019d love to hear what you\u2019re working on.';
+  const SOCIALS = Array.isArray(SITE.socialLinks) && SITE.socialLinks.length ? SITE.socialLinks : [
+    { label: 'Instagram', url: 'https://www.instagram.com/kodudesignstudio/' },
+    { label: 'LinkedIn', url: 'https://www.linkedin.com/in/lachlan-sarv-4192311a4/' },
+  ];
+  const escAttr = (v) => String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
   const contactTriggers = [...document.querySelectorAll('.nav__item[href^="mailto:"], .js-contact')];
   const contactTrigger = contactTriggers[0];
   if (contactTrigger) {
@@ -174,8 +185,8 @@
           '<button class="contact-panel__close" type="button"><span class="roll-target">Close</span></button>' +
         '</div>' +
         '<div class="contact-panel__body">' +
-          '<p class="contact-panel__lead">Like what you see? Let\u2019s talk. ' +
-            '<span>Whether it\u2019s a brand that needs a look, a website that needs building, or just a rough idea you want to kick around, I\u2019d love to hear what you\u2019re working on.</span>' +
+          '<p class="contact-panel__lead">' + escAttr(CONTACT_HEADING) + ' ' +
+            '<span>' + escAttr(CONTACT_INTRO) + '</span>' +
           '</p>' +
           '<div class="contact-panel__portrait">' +
             '<picture>' +
@@ -189,9 +200,10 @@
       '</div>' +
       '<div class="contact-panel__links">' +
         '<p class="contact-panel__label">Say hello</p>' +
-        '<a class="contact-link" href="mailto:' + CONTACT_EMAIL + '"><span class="roll-target">' + CONTACT_EMAIL + '</span>' + arrow + '</a>' +
-        '<a class="contact-link contact-link--ext" href="https://www.instagram.com/kodudesignstudio/" target="_blank" rel="noopener"><span class="roll-target">Instagram</span>' + extArrow + '</a>' +
-        '<a class="contact-link contact-link--ext" href="https://www.linkedin.com/in/lachlan-sarv-4192311a4/" target="_blank" rel="noopener"><span class="roll-target">LinkedIn</span>' + extArrow + '</a>' +
+        '<a class="contact-link" href="mailto:' + escAttr(CONTACT_EMAIL) + '"><span class="roll-target">' + escAttr(CONTACT_EMAIL) + '</span>' + arrow + '</a>' +
+        SOCIALS.map((s) =>
+          '<a class="contact-link contact-link--ext" href="' + escAttr(s.url) + '" target="_blank" rel="noopener"><span class="roll-target">' + escAttr(s.label) + '</span>' + extArrow + '</a>'
+        ).join('') +
       '</div>';
     body.appendChild(scrim);
     body.appendChild(panel);
