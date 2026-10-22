@@ -964,7 +964,7 @@
   if (body.dataset.view === 'approach' || body.dataset.view === 'privacy') {
     const brandLines = gsap.utils.toArray('.brand > *');
     const navItems = gsap.utils.toArray('.nav > *');
-    const lead = document.querySelector('.page-intro__text');
+    const leads = [...document.querySelectorAll('.page-intro__text')];
 
     html.classList.add('is-loading');
     const ready = document.fonts ? document.fonts.ready : Promise.resolve();
@@ -973,7 +973,7 @@
         html.classList.remove('is-loading'); html.classList.add('intro-done'); return;
       }
 
-      const lines = lead ? splitLines(lead) : [];
+      const lines = leads.flatMap(splitLines);
       gsap.set(brandLines, { y: 14, opacity: 0 });
       gsap.set(navItems, { y: 14, opacity: 0 });
       if (lines.length) gsap.set(lines, { yPercent: 110 });
@@ -985,7 +985,7 @@
           html.classList.add('intro-done');
           gsap.set([brandLines, navItems], { clearProps: 'transform,opacity' });
           // back to plain text so the big type renders crisp
-          if (lead && lead.dataset.text) lead.textContent = lead.dataset.text;
+          leads.forEach((el) => { if (el.dataset.text) el.textContent = el.dataset.text; });
         },
       });
       window.koduIntro = tl;
