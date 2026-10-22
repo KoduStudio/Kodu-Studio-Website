@@ -1,0 +1,74 @@
+[
+  {
+    "slug": "nsw-mining",
+    "name": "NSW Mining Careers",
+    "info": "Choose Your Adventure",
+    "draft": false,
+    "coverWidths": [
+      500,
+      750,
+      1000,
+      1215
+    ]
+  },
+  {
+    "slug": "alpha-life-essentials",
+    "name": "Alpha Life Essentials",
+    "info": "Video platform for connection",
+    "draft": false,
+    "coverWidths": [
+      500,
+      750,
+      1000,
+      1406
+    ]
+  },
+  {
+    "slug": "aqua-club",
+    "name": "Aqua Club",
+    "info": "Australia’s Premier Yacht Toys",
+    "draft": false,
+    "coverWidths": [
+      500,
+      750,
+      1000,
+      1265
+    ]
+  },
+  {
+    "slug": "grampians-sandstone",
+    "name": "Grampians Sandstone",
+    "info": "Website Design & Build",
+    "draft": false,
+    "coverWidths": [
+      500,
+      750,
+      1000,
+      1350
+    ]
+  },
+  {
+    "slug": "courtside-wines",
+    "name": "Courtside Wines",
+    "info": "Branding, Print & Web",
+    "draft": false,
+    "coverWidths": [
+      500,
+      750,
+      1000,
+      1350
+    ]
+  },
+  {
+    "slug": "product-modelling",
+    "name": "Timber Product Renders",
+    "info": "3D Modelling in Blender",
+    "draft": false,
+    "coverWidths": [
+      500,
+      750,
+      1000,
+      1265
+    ]
+  }
+]
