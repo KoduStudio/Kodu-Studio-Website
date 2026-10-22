@@ -666,12 +666,36 @@
   if (revealItems.length && !reduceMotion && 'IntersectionObserver' in window) {
     html.classList.add('reveal-ready');
     const pending = new Set(revealItems);
+    const lineSpans = new Map();          // block → the masked lines inside it
+
+    /* The hero owns the first second or so of these pages. Anything that would reveal while
+       it is still arriving waits in a queue instead, so the body is not animating underneath
+       a headline that has not landed yet. */
+    const hasHeroIntro = body.dataset.view === 'approach' || body.dataset.view === 'privacy';
+    let gateOpen = !(hasHeroIntro && typeof gsap !== 'undefined');
+    const queued = [];
+
+    const paint = (el) => {
+      el.classList.add('is-in');
+      const spans = lineSpans.get(el);
+      if (spans) gsap.to(spans, { yPercent: 0, duration: 0.9, ease: 'power3.out', stagger: 0.07, force3D: false });
+    };
 
     const show = (el) => {
-      el.classList.add('is-in');
       io.unobserve(el);
       pending.delete(el);
+      if (gateOpen) paint(el); else queued.push(el);
     };
+
+    const openGate = () => {
+      if (gateOpen) return;
+      gateOpen = true;
+      queued.forEach((el, i) => gsap.delayedCall(i * 0.12, () => paint(el)));
+      queued.length = 0;
+    };
+    window.koduOpenReveals = openGate;
+    // Belt and braces: if the intro never completes, nothing is left hidden.
+    setTimeout(openGate, 4000);
 
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => { if (e.isIntersecting) show(e.target); });
@@ -693,6 +717,22 @@
     addEventListener('scroll', sweep, { passive: true });
     if (lenis) lenis.on('scroll', sweep);
     setTimeout(sweep, 1500);          // nothing on screen stays hidden
+
+    /* data-reveal="lines" blocks get the hero's move instead of a plain fade: each line
+       rises out of its own mask. Split after the fonts land, since the split measures where
+       the lines actually break — doing it earlier would break them against a fallback face. */
+    const lineBlocks = [...document.querySelectorAll('[data-reveal="lines"]')];
+    if (lineBlocks.length && typeof gsap !== 'undefined') {
+      (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => {
+        lineBlocks.forEach((block) => {
+          const spans = [...block.querySelectorAll('h1, h2, h3, p')].flatMap(splitLines);
+          if (!spans.length) return;
+          gsap.set(spans, { yPercent: 110 });
+          lineSpans.set(block, spans);
+          if (block.classList.contains('is-in')) paint(block);   // revealed while we waited
+        });
+      });
+    }
   }
 
   /* ---------- Parallax ----------
@@ -981,7 +1021,9 @@
     const ready = document.fonts ? document.fonts.ready : Promise.resolve();
     ready.then(() => {
       if (reduceMotion || typeof gsap === 'undefined') {
-        html.classList.remove('is-loading'); html.classList.add('intro-done'); return;
+        html.classList.remove('is-loading'); html.classList.add('intro-done');
+        if (window.koduOpenReveals) window.koduOpenReveals();
+        return;
       }
 
       const lines = leads.flatMap(splitLines);
@@ -1005,6 +1047,9 @@
       tl.to(brandLines, { y: 0, opacity: 1, duration: 0.9, stagger: 0.08, force3D: false }, 0.1)
         .to(navItems, { y: 0, opacity: 1, duration: 0.9, stagger: 0.06, force3D: false }, 0.3);
       if (lines.length) tl.to(lines, { yPercent: 0, duration: 1.0, stagger: 0.09, force3D: false }, 0.35);
+      // Let the body start a beat before the last hero line settles, so the two overlap
+      // rather than the page sitting still and then starting again.
+      tl.call(() => { if (window.koduOpenReveals) window.koduOpenReveals(); }, null, '>-0.35');
     });
     return;
   }

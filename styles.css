@@ -405,7 +405,8 @@ html.lenis, html.lenis body { height: auto; }
 /* Line-reveal masks (spans are injected by main.js, removed again after the intro) */
 .about .line,
 .page-intro .line,
-.project-text .line {
+.project-text .line,
+[data-reveal="lines"] .line {
   display: block;
   overflow: hidden;
   padding-bottom: 0.08em;   /* room for descenders inside the mask */
@@ -413,7 +414,8 @@ html.lenis, html.lenis body { height: auto; }
 }
 .about .line > span,
 .page-intro .line > span,
-.project-text .line > span { display: block; }
+.project-text .line > span,
+[data-reveal="lines"] .line > span { display: block; }
 
 /* Pre-animation: hide until JS is ready (JS removes this) */
 .is-loading .about__portrait,
@@ -1222,6 +1224,10 @@ html.lock-scroll { overflow: hidden; }
   transform: none;
   transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
 }
+/* These blocks reveal line by line instead, so they do not slide as a whole — they just
+   stop being hidden while the masked lines inside them rise. */
+.reveal-ready [data-reveal="lines"] { transform: none; }
+.reveal-ready [data-reveal="lines"].is-in { transition: opacity 0.25s linear; }
 @media (prefers-reduced-motion: reduce) {
   .reveal-ready [data-reveal] { opacity: 1; transform: none; }
 }
