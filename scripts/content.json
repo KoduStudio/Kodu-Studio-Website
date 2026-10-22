@@ -36,7 +36,7 @@
         "question": "Do you look after the site after launch?"
       },
       {
-        "answer": "Often, yes. If you have a brand you are happy with, I work inside it rather than reinventing it. If you have a developer or an internal marketing team, I can design and hand over, or build alongside them.",
+        "answer": "Yes of course! If you have a brand you are happy with, I work inside it rather than reinventing it. If you have a developer or an internal marketing team, I can design and hand over, or build alongside them. ",
         "question": "Can you work with my existing brand or team?"
       }
     ],
@@ -54,7 +54,7 @@
         ]
       },
       {
-        "description": "I design in Figma and keep it simple on purpose. Clear hierarchy, generous space and restraint where it counts, so the brand carries the page and visitors get one obvious reason to act.",
+        "description": "I design polished brands and web experiences with a modern Swiss edge. Exceptionally clear and packed with distinct personality. I focus entirely on what works best for you, building clean structures that let your brand carry the page, giving visitors one unmistakable reason to act.",
         "name": "Design",
         "tags": [
           "Art Direction",
@@ -65,7 +65,7 @@
         ]
       },
       {
-        "description": "I build the site to hold every detail of the design and to load fast on a phone, because a site that looks sharp and arrives slowly still loses people.",
+        "description": "I build everything to perform exactly as well as it looks. Whether it’s a brand identity structured to scale cleanly across platforms or a website built to load instantly on a phone, execution matters. Because a sharp design that’s clunky to use or slow to arrive still loses people.",
         "name": "Build",
         "tags": [
           "Astro",

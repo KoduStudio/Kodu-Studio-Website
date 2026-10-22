@@ -40,7 +40,7 @@
   --heading-font: 'Hedvig Letters Serif', Georgia, 'Times New Roman', serif;
 
   /* Type scale, fluid between a 390px phone and the 1512px design width */
-  --h2: clamp(2.125rem, 1.299rem + 3.387vw, 6.5rem);       /* 34 → 72 at 1512 → 104 at 2456 */
+  --h2: clamp(1.9rem, 0.965rem + 3.741vw, 6.5rem);         /* 30.4 at 400 → 72 at 1512 → 104 */
   --h3: clamp(1.875rem, 1.223rem + 2.674vw, 5.5rem);       /* 30 → 60 at 1512 → 88 at 2560 */
   --h5: clamp(1.5rem,   1.239rem + 1.070vw, 2.25rem);      /* 24 → 36 */
   --h6: clamp(1.25rem,  1.033rem + 0.891vw, 1.875rem);     /* 20 → 30 */
@@ -706,7 +706,11 @@ html.lock-scroll { overflow: hidden; }
   right: 0;
   z-index: 90;
   width: min(680px, 50vw);
-  height: 100svh;
+  /* dvh, not svh: svh is the height with the browser bars showing, so hiding Chrome's
+     bottom bar grew the viewport and left a strip of page below the panel. The page
+     behind is scroll-locked while this is open, so dvh can't cause scroll thrash. */
+  height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -776,9 +780,13 @@ html.lock-scroll { overflow: hidden; }
 .contact-panel__links { padding-bottom: 2.5rem; }
 .contact-panel__label {
   color: var(--panel-muted);
+  margin-bottom: 1rem;
+}
+/* Both panels label their lists the same way */
+.contact-panel__label,
+.menu-panel__label {
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  margin-bottom: 1rem;
 }
 .contact-link {
   display: flex;
@@ -804,7 +812,8 @@ html.lock-scroll { overflow: hidden; }
 
 /* The email is 26 characters, so the type is sized against the panel width, not the viewport */
 @supports (container-type: inline-size) {
-  .contact-panel { container-type: inline-size; }
+  .contact-panel,
+  .menu-panel { container-type: inline-size; }
   .contact-link { font-size: clamp(1.0625rem, 5.6cqw, 2.5rem); }
 }
 .contact-link .roll { --roll-step: 10ms; }
@@ -877,6 +886,10 @@ html.lock-scroll { overflow: hidden; }
   font-family: var(--heading-font);
   font-weight: 400;
   font-size: var(--h2);
+}
+/* Tight leading reads well at 70px+, but crowds the serif once it drops to phone sizes */
+@media (max-width: 699px) {
+  .page-intro--serif .page-intro__text { --intro-lh: 1.24; }
 }
 
 /* ---------- Approach block ---------- */
@@ -1122,6 +1135,11 @@ html.lock-scroll { overflow: hidden; }
 }
 
 .menu-panel {
+  /* The contact panel's link rows are reused in here, so give them the page's own
+     rule and muted colours instead of the inverted ones they use in that panel. */
+  --panel-line: var(--rule);
+  --panel-muted: var(--text-muted);
+
   position: fixed;
   inset: 0;
   z-index: 95;
@@ -1152,7 +1170,8 @@ html.lock-scroll { overflow: hidden; }
 }
 .menu-panel__label {
   margin: 0;
-  padding-bottom: 12px;
+  /* 1rem, matching the gap the contact panel's label leaves above its first rule */
+  padding-bottom: 1rem;
   margin-top: clamp(3rem, 12vh, 6rem);
   border-bottom: 1px solid var(--rule);
   color: var(--text-muted);
@@ -1161,20 +1180,17 @@ html.lock-scroll { overflow: hidden; }
 .menu-panel__nav {
   display: flex;
   flex-direction: column;
-  padding-top: 24px;
+  /* the same top padding a .contact-link carries, so rule → first item matches too */
+  padding-top: clamp(0.9rem, 1.6vw, 1.4rem);
 }
 .menu-panel__nav a {
   font-weight: 500;
-  font-size: var(--h5);
+  font-size: calc(var(--h5) * 2);
   line-height: 1.3;
   color: var(--text-primary);
 }
-.menu-panel__email {
-  margin: auto 0 0;
-  font-size: var(--label-lg);
-  color: var(--text-primary);
-  word-break: break-word;
-}
+/* The contact rows sit at the foot of the panel, below whatever space is left */
+.menu-panel__contact { margin-top: auto; }
 
 @media (max-width: 699px) {
   .nav__item { display: none; }

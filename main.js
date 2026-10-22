@@ -272,30 +272,18 @@
      line it snaps back to the top invisibly, so it reads as an endless upward loop. */
   const swap = document.querySelector('.brand__swap');
   if (swap && !reduceMotion) {
-    let step = 0;
-    let timer = null;
-    const advance = () => {
-      step += 1;
-      gsap.to(swap, {
-        yPercent: -(100 / 3) * step,   // one line = a third of the three-line track
-        duration: 0.55,
-        ease: 'power3.inOut',
-        overwrite: true,
-        onComplete() { if (step >= 2) { step = 0; gsap.set(swap, { yPercent: 0 }); } },
-      });
-    };
-    const start = () => { if (!timer) timer = setInterval(advance, 2800); };
-    const stop = () => { clearInterval(timer); timer = null; };
-    // Background tabs keep firing intervals but stop animating, which used to run the track off
-    // the end. Pause while hidden and come back to a clean first line.
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) { stop(); return; }
-      gsap.killTweensOf(swap);
-      step = 0;
-      gsap.set(swap, { yPercent: 0 });
-      start();
-    });
-    start();
+    // One repeating timeline rather than setInterval driving a counter. A counter only
+    // resets in onComplete, so anywhere frames are throttled but timers keep firing —
+    // iOS Low Power Mode, a backgrounded tab — the tweens never finish, the counter runs
+    // away and the track parks part-way up, leaving two half-lines showing under the
+    // logo. A timeline is positioned by elapsed time, so it cannot drift: throttling
+    // pauses it and it resumes on the right line.
+    const line = (i) => -(100 / 3) * i;       // one line = a third of the three-line track
+    gsap.set(swap, { yPercent: 0 });
+    gsap.timeline({ repeat: -1, defaults: { duration: 0.55, ease: 'power3.inOut' } })
+      .to(swap, { yPercent: line(1) }, 2.8)
+      .to(swap, { yPercent: line(2) }, 6.15)
+      .set(swap, { yPercent: 0 }, 9.5);       // line 3 is line 1 again, so the snap is invisible
   }
 
   /* ---------- Theme toggle ---------- */
@@ -829,6 +817,9 @@
     nav.appendChild(menuBtn);
     rollify(menuBtn.querySelectorAll('.roll-target'));
 
+    const menuArrow = lucide('<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>');      // arrow-right
+    const menuExtArrow = lucide('<path d="M7 7h10v10"/><path d="M7 17 17 7"/>');    // arrow-up-right
+
     const panel = document.createElement('div');
     panel.className = 'menu-panel';
     panel.setAttribute('role', 'dialog');
@@ -844,9 +835,17 @@
         '<a href="' + siteUrl('./') + '">Work</a>' +
         '<a href="' + siteUrl('approach') + '">Approach</a>' +
         '<a href="' + siteUrl('about') + '">About</a>' +
-        '<a class="js-menu-contact" href="mailto:' + CONTACT_EMAIL + '">Contact</a>' +
+        '<a class="js-menu-contact" href="mailto:' + escAttr(CONTACT_EMAIL) + '">Contact</a>' +
       '</nav>' +
-      '<p class="menu-panel__email"><a href="mailto:' + CONTACT_EMAIL + '">' + CONTACT_EMAIL + '</a></p>';
+      // The same classes the contact panel uses, so the two read as one piece of design
+      // and there is only one set of styles to maintain.
+      '<div class="contact-panel__links menu-panel__contact">' +
+        '<p class="contact-panel__label">Say hello</p>' +
+        '<a class="contact-link" href="mailto:' + escAttr(CONTACT_EMAIL) + '"><span class="roll-target">' + escAttr(CONTACT_EMAIL) + '</span>' + menuArrow + '</a>' +
+        SOCIALS.map((s) =>
+          '<a class="contact-link contact-link--ext" href="' + escAttr(s.url) + '" target="_blank" rel="noopener"><span class="roll-target">' + escAttr(s.label) + '</span>' + menuExtArrow + '</a>'
+        ).join('') +
+      '</div>';
     body.appendChild(panel);
     rollify(panel.querySelectorAll('.roll-target'));
 
