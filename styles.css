@@ -939,6 +939,9 @@ html.lock-scroll { overflow: hidden; }
   display: flex;
   flex-direction: column;
   gap: 32px;
+  /* This block runs to the last column, so its text would otherwise set hard against
+     the page margin. An inch of air makes the last word on each line easier to read. */
+  padding-right: 1rem;
 }
 
 /* ---------- Tags ---------- */
