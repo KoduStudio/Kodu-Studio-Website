@@ -869,7 +869,12 @@ html.lock-scroll { overflow: hidden; }
   content: "";
   float: left;
   width: var(--intro-indent);
-  height: calc(1em * var(--intro-lh));
+  /* Deliberately a hair under one line box, never exactly equal. Both are 1em × the same
+     line-height, so at equal heights it is a tie, and whether the second line clears the
+     float comes down to sub-pixel rounding that differs by browser and by viewport width
+     — which is how the second line started picking up the indent too. A 1px haircut is
+     invisible and puts it unambiguously on the right side of that edge. */
+  height: calc(1em * var(--intro-lh) - 1px);
 }
 /* The privacy intro is a block in columns 5 to 12, not a first-line indent */
 .page-intro--block {
