@@ -791,6 +791,9 @@
     document.addEventListener('visibilitychange', () => { if (!document.hidden) tick(); });
   }
 
+  /* ---------- Footer: keep the year honest ---------- */
+  document.querySelectorAll('[data-year]').forEach((el) => { el.textContent = String(new Date().getFullYear()); });
+
   /* ---------- Back to top ---------- */
   const toTop = document.querySelector('[data-back-to-top]');
   if (toTop) {
