@@ -1016,7 +1016,7 @@ html.lock-scroll { overflow: hidden; }
 }
 .faq-item__a p {
   grid-column: 5 / 11;
-  max-width: 800px;             /* a comfortable measure, roughly 70 characters */
+  max-width: 900px;             /* a comfortable measure, roughly 80 characters */
   font-size: var(--body-lg);
   line-height: 1.4;
   color: var(--text-muted);
