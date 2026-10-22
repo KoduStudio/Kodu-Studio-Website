@@ -1049,11 +1049,11 @@
       tl.to(brandLines, { y: 0, opacity: 1, duration: 0.9, stagger: 0.08, force3D: false }, 0.1)
         .to(navItems, { y: 0, opacity: 1, duration: 0.9, stagger: 0.06, force3D: false }, 0.3);
       if (lines.length) tl.to(lines, { yPercent: 0, duration: 1.0, stagger: 0.09, force3D: false }, 0.35);
-      // Start the body while the last hero line is still visibly moving. power3.out does
-      // almost all of its travel early, so the hero reads as finished long before its tween
-      // ends: at 0.35s of overlap it is already 96% of the way there and the handover felt
-      // like a pause. 0.6s puts the body in at around 78%, which reads as one movement.
-      tl.call(() => { if (window.koduOpenReveals) window.koduOpenReveals(); }, null, '>-0.6');
+      // Bring the body in just after the hero starts, not as it finishes. Anchored to an
+      // absolute position rather than the hero's end, because the relationship that matters
+      // is to where the hero begins: the About page starts its body 0.15s after its hero and
+      // reads as one load, and anything keyed to the end read as two separate events.
+      tl.call(() => { if (window.koduOpenReveals) window.koduOpenReveals(); }, null, 0.6);
     });
     return;
   }

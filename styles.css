@@ -927,7 +927,11 @@ html.lock-scroll { overflow: hidden; }
   padding-bottom: 56px;
   border-top: 1px solid var(--rule);
 }
-.approach-row:first-of-type { border-top: 0; }
+/* The header's own border-bottom is the rule above row 01, so the first row must not add
+   a second one. Keyed off the header rather than :first-of-type, which matched nothing —
+   it means "first div among siblings", and that is the header, not a row. Two 1px rules
+   sat on top of each other and pulled apart whenever the row animated in. */
+.approach-header + .approach-row { border-top: 0; }
 .approach-row:last-of-type { padding-bottom: 0; }
 .approach-row__num,
 .approach-row__name,
