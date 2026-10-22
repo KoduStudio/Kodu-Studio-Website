@@ -768,6 +768,7 @@
     const brandLines = gsap.utils.toArray('.brand > *');
     const navItems = gsap.utils.toArray('.nav > *');
     const portrait = document.querySelector('.about__portrait');
+    const hero = document.querySelector('.page-intro__text');
     const eyebrows = gsap.utils.toArray('.about__eyebrow');
     const leads = gsap.utils.toArray('.about__lead');
     const listItems = gsap.utils.toArray('.about__list li');
@@ -778,8 +779,10 @@
     ready.then(() => {
       if (reduceMotion) { html.classList.remove('is-loading'); html.classList.add('intro-done'); return; }
 
+      const heroLines = hero ? splitLines(hero) : [];
       const lineSets = leads.map(splitLines);
       const lines = lineSets.flat();
+      if (heroLines.length) gsap.set(heroLines, { yPercent: 110 });
       gsap.set(brandLines, { y: 14, opacity: 0 });
       gsap.set(navItems, { y: 14, opacity: 0 });
       gsap.set(portrait, { opacity: 0, y: 24, clipPath: 'inset(0 0 100% 0)' });
@@ -796,6 +799,7 @@
           gsap.set([brandLines, navItems, eyebrows, leads, listItems, linkItems, portrait], { clearProps: 'transform,opacity,clipPath' });
           // Put the paragraphs back to plain text so they render as ordinary, crisp type
           leads.forEach((el) => { el.textContent = el.dataset.text; });
+          if (hero && hero.dataset.text) hero.textContent = hero.dataset.text;
         },
       });
       window.koduIntro = tl;
@@ -805,6 +809,9 @@
       // Nav — top-left first, then the right side
       tl.to(brandLines, { y: 0, opacity: 1, duration: 0.9, stagger: 0.08, force3D: false }, 0.1)
         .to(navItems, { y: 0, opacity: 1, duration: 0.9, stagger: 0.06, force3D: false }, 0.3);
+
+      // The serif hero rises first
+      if (heroLines.length) tl.to(heroLines, { yPercent: 0, duration: 1.0, stagger: 0.09, force3D: false }, 0.3);
 
       // Portrait wipes up into view
       tl.to(portrait, { opacity: 1, y: 0, clipPath: 'inset(0 0 0% 0)', duration: 1.1, ease: 'power3.inOut' }, 0.25);
@@ -833,7 +840,7 @@
   if (body.dataset.view === 'approach') {
     const brandLines = gsap.utils.toArray('.brand > *');
     const navItems = gsap.utils.toArray('.nav > *');
-    const lead = document.querySelector('.approach-intro__text');
+    const lead = document.querySelector('.page-intro__text');
 
     html.classList.add('is-loading');
     const ready = document.fonts ? document.fonts.ready : Promise.resolve();

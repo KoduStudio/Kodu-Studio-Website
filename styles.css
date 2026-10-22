@@ -14,6 +14,14 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Hedvig Letters Serif';
+  src: url('fonts/HedvigLettersSerif-Variable.woff2') format('woff2-variations');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ---------- Tokens ---------- */
 :root {
   --bg-base: #ffffff;
@@ -29,8 +37,10 @@
   --label-lg: 16px;
   --label-md: 14px;
   --body-font: 'PP Neue Montreal', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --heading-font: 'Hedvig Letters Serif', Georgia, 'Times New Roman', serif;
 
   /* Type scale, fluid between a 390px phone and the 1512px design width */
+  --h2: clamp(2.125rem, 1.299rem + 3.387vw, 6.5rem);       /* 34 → 72 at 1512 → 104 at 2456 */
   --h3: clamp(1.875rem, 1.223rem + 2.674vw, 5.5rem);       /* 30 → 60 at 1512 → 88 at 2560 */
   --h5: clamp(1.5rem,   1.239rem + 1.070vw, 2.25rem);      /* 24 → 36 */
   --h6: clamp(1.25rem,  1.033rem + 0.891vw, 1.875rem);     /* 20 → 30 */
@@ -311,12 +321,11 @@ html.lenis, html.lenis body { height: auto; }
 /* ---------- About page ----------
    12-column grid (10px gutters, same as the homepage cards), anchored to the bottom.
    Portrait = cols 1–2 · eyebrows = cols 5–6 · text = cols 7–11 (as in the Figma grid). */
+.about-page { flex: 1 0 auto; }
 .about {
-  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  padding: 40px var(--margin-main) 96px;
+  padding: var(--section-xl) var(--margin-main) var(--section-lg);
 }
 .about__grid {
   display: grid;
@@ -417,7 +426,7 @@ html.lenis, html.lenis body { height: auto; }
 }
 
 @media (max-width: 899px) {
-  .about { justify-content: flex-start; padding-top: 3rem; padding-bottom: 40px; }   /* 3rem from the nav */
+  .about { padding-bottom: 40px; }
   .about__grid { grid-template-columns: repeat(6, minmax(0, 1fr)); row-gap: 12px; }     /* 6 columns on mobile */
   .about__portrait { grid-column: 1 / 4; grid-row: auto; margin-bottom: 36px; }        /* half the screen width */
   .about__eyebrow, .about__lead, .about__list, .about__links { grid-column: 1 / 7; }
@@ -827,17 +836,24 @@ html.lock-scroll { overflow: hidden; }
   align-items: start;
 }
 
-/* ---------- Intro ---------- */
-.approach-intro {
+/* ---------- Page intro (Approach + About) ---------- */
+.page-intro {
   padding: var(--intro-top) var(--margin-main) var(--section-xl);
 }
-.approach-intro__text {
+.page-intro__text {
   font-weight: 500;
   font-size: var(--h3);
   line-height: 1.1;
   color: var(--text-primary);
   /* First line starts at column 5: four columns plus the four gutters before it */
   text-indent: calc(4 * ((100% - 11 * var(--column-gap)) / 12) + 4 * var(--column-gap));
+}
+/* About leads with the serif */
+.page-intro--serif .page-intro__text {
+  font-family: var(--heading-font);
+  font-weight: 400;
+  font-size: var(--h2);
+  line-height: 1.08;
 }
 
 /* ---------- Approach block ---------- */
@@ -1000,7 +1016,7 @@ html.lock-scroll { overflow: hidden; }
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--column-gap);
   align-items: center;
-  padding: var(--margin-main);
+  padding: var(--section-lg) var(--margin-main) var(--margin-main);
   font-size: var(--label-lg);
   color: var(--text-primary);
   flex: 0 0 auto;
@@ -1033,7 +1049,7 @@ html.lock-scroll { overflow: hidden; }
   .site-footer {
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }
-  .approach-intro__text { text-indent: 0; }
+  .page-intro__text { text-indent: 0; }
 
   .approach-header__title { grid-column: 1 / 7; }
   .approach-row { padding-bottom: 40px; row-gap: 20px; }
