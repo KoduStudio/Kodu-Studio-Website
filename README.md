@@ -35,6 +35,7 @@ drop a folder of images + a `project.json` into `content/`, then double-click **
 
 - **Preview.command** — build + open a local preview at http://localhost:5173
 - **Publish.command** — build + commit + push the branch you are on
+- **Go-Live.command** — merge staging into main and push, i.e. update the live site
 
 Projects stay on this flow rather than in Sanity because resizing the images needs macOS
 `sips`, which can't run on Vercel.
@@ -52,11 +53,19 @@ Make the changes, then double-click **Publish.command**. It pushes the branch yo
 and tells you whether that went to the live site or to a preview. The preview URL is in
 the Vercel dashboard under Deployments, or on the branch page in GitHub.
 
-When it looks right, merge it into `main` to go live:
+When it looks right, double-click **Go-Live.command**. It shows you which commits are
+about to go live, asks you to confirm, then fast-forwards `main` and pushes — which is what
+actually updates www.kodustudio.com. It puts you back on the branch you were on.
+
+The same thing by hand:
 
 ```bash
-git checkout main && git merge staging && git push origin main
+git checkout main && git merge staging --ff-only && git push origin main && git checkout staging
 ```
+
+Don't use Vercel's "Promote to Production" button for this. It makes a preview build serve
+production without moving `main`, so the repo and the live site disagree — and the next
+Publish in the Studio rebuilds `main` and silently undoes it.
 
 ## The build
 
