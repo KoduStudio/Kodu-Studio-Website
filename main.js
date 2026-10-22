@@ -723,6 +723,62 @@
     if (lenis) lenis.on('scroll', update);
   }
 
+  /* ---------- TEXT SELECTION ----------
+     ::selection takes a colour but not a gradient, so the highlight travels through the
+     brand gradient's stops instead, only while something is actually selected. The text
+     colour flips with the background's brightness so the selection always stays readable. */
+  {
+    const STOPS = [[240, 225, 206], [147, 81, 29], [61, 42, 35], [16, 16, 16]];
+    // Near-black would vanish into the dark theme's page, so that stop is dropped there
+    const stopsFor = () => (html.getAttribute('data-theme') === 'dark' ? STOPS.slice(0, 3) : STOPS);
+    const CYCLE = 4200;           // ms for a full pass
+    const STEP = 70;              // ms between repaints: smooth enough, cheap enough
+
+    const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
+    // Relative luminance, the same maths the contrast ratio uses
+    const lum = ([r, g, b]) => {
+      const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+      return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+    };
+
+    let timer = null;
+
+    const paint = () => {
+      const stops = stopsFor();
+      const t = ((Date.now() % CYCLE) / CYCLE) * stops.length;
+      const i = Math.floor(t);
+      const rgb = mix(stops[i % stops.length], stops[(i + 1) % stops.length], t - i);
+      html.style.setProperty('--selection-bg', 'rgb(' + rgb.join(',') + ')');
+      html.style.setProperty('--selection-fg', lum(rgb) > 0.35 ? '#1c1c1c' : '#ffffff');
+    };
+
+    const stop = () => {
+      if (!timer) return;
+      clearInterval(timer);
+      timer = null;
+      html.style.removeProperty('--selection-bg');   // back to the solid orange
+      html.style.removeProperty('--selection-fg');
+    };
+
+    const hasSelection = () => {
+      const sel = getSelection();
+      return !!sel && !sel.isCollapsed && String(sel).trim().length > 0;
+    };
+    const sync = () => {
+      if (reduceMotion) return;                      // solid orange, no cycling
+      if (hasSelection() && !document.hidden) {
+        if (!timer) { paint(); timer = setInterval(paint, STEP); }
+      } else {
+        stop();
+      }
+    };
+
+    document.addEventListener('selectionchange', sync);
+    // A hidden tab should not repaint a selection, but it should pick up again on return
+    document.addEventListener('visibilitychange', sync);
+  }
+  /* ---------- END TEXT SELECTION ---------- */
+
   /* ---------- Footer: the time in Newcastle ---------- */
   const clock = document.querySelector('[data-local-time]');
   if (clock) {

@@ -1200,3 +1200,24 @@ html.lock-scroll { overflow: hidden; }
   .approach-band img { height: 100%; transform: none !important; }
 }
 /* END SCROLL REVEALS + PARALLAX */
+
+/* =====================================================================================
+   TEXT SELECTION
+   The brand gradient, as far as ::selection allows. It accepts colour and background-color
+   only (a gradient is ignored), so main.js walks a highlight through the gradient's stops
+   while text is selected. Without JS it stays the solid burnt orange.
+   Delete this block and the TEXT SELECTION section in main.js to go back to the default.
+   ===================================================================================== */
+:root {
+  --selection-bg: #93511d;      /* the gradient's burnt orange */
+  --selection-fg: #ffffff;
+}
+::selection {
+  background-color: var(--selection-bg);
+  color: var(--selection-fg);
+}
+::-moz-selection {
+  background-color: var(--selection-bg);
+  color: var(--selection-fg);
+}
+/* END TEXT SELECTION */
