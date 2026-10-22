@@ -1,0 +1,23 @@
+{
+  "name": "kodu-studio-cms",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Sanity Studio for the Kodu Studio site copy",
+  "type": "module",
+  "scripts": {
+    "dev": "sanity dev",
+    "start": "sanity start",
+    "build": "sanity build",
+    "deploy": "sanity deploy"
+  },
+  "dependencies": {
+    "@sanity/icons": "^5.2.3",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "sanity": "^6.20.0",
+    "styled-components": "^6.6.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0"
+  }
+}

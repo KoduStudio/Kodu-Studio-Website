@@ -2,5 +2,6 @@
 content/
 logos/
 scripts/
+studio/
 *.command
 README.md
