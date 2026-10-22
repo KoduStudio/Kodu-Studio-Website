@@ -121,7 +121,7 @@ img { display: block; max-width: 100%; }
 .nav {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 18px;
 }
 
 .nav__item {
