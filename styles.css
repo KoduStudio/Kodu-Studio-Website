@@ -403,6 +403,7 @@ html.lenis, html.lenis body { height: auto; }
 
 /* Line-reveal masks (spans are injected by main.js, removed again after the intro) */
 .about .line,
+.page-intro .line,
 .project-text .line {
   display: block;
   overflow: hidden;
@@ -410,6 +411,7 @@ html.lenis, html.lenis body { height: auto; }
   margin-bottom: -0.08em;
 }
 .about .line > span,
+.page-intro .line > span,
 .project-text .line > span { display: block; }
 
 /* Pre-animation: hide until JS is ready (JS removes this) */
@@ -884,7 +886,7 @@ html.lock-scroll { overflow: hidden; }
 .approach-row__name,
 .approach-row__text {
   font-size: var(--h6);
-  line-height: 1.3;
+  line-height: 1.24;
   color: var(--text-primary);
   font-weight: 400;
 }
@@ -1003,6 +1005,7 @@ html.lock-scroll { overflow: hidden; }
 }
 .faq-item__a p {
   grid-column: 5 / 11;
+  max-width: 800px;             /* a comfortable measure, roughly 70 characters */
   font-size: var(--body-lg);
   line-height: 1.4;
   color: var(--text-muted);
@@ -1151,3 +1154,38 @@ html.lock-scroll { overflow: hidden; }
   .nav { gap: 16px; }
 }
 /* END MOBILE MENU */
+
+/* =====================================================================================
+   SCROLL REVEALS + PARALLAX (Approach page)
+   JS adds .reveal-ready, so without it everything is simply visible.
+   ===================================================================================== */
+.reveal-ready [data-reveal] {
+  opacity: 0;
+  transform: translateY(18px);
+}
+.reveal-ready [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal-ready [data-reveal] { opacity: 1; transform: none; }
+}
+
+/* The band holds a taller image and slides it as the section crosses the viewport */
+.approach-band { position: relative; }
+.approach-band picture,
+.approach-band img {
+  display: block;
+  width: 100%;
+  height: 128%;              /* the extra 28% is the travel */
+  object-fit: cover;
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .approach-band picture,
+  .approach-band img { height: 100%; transform: none !important; }
+}
+/* END SCROLL REVEALS + PARALLAX */

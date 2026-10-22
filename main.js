@@ -658,6 +658,50 @@
     });
   }
 
+  /* ---------- Scroll reveals ----------
+     Each marked block fades up once as it comes into view. Plain CSS transitions driven by
+     an IntersectionObserver, so there is no scroll handler and nothing to throttle. */
+  const revealItems = document.querySelectorAll('[data-reveal]');
+  if (revealItems.length && !reduceMotion && 'IntersectionObserver' in window) {
+    html.classList.add('reveal-ready');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('is-in');
+        io.unobserve(e.target);           // once only
+      });
+    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.08 });
+    revealItems.forEach((el) => io.observe(el));
+  }
+
+  /* ---------- Parallax ----------
+     The image inside a band is taller than the band and slides across that slack as the band
+     crosses the viewport. Driven by scroll rather than a permanent ticker, so it costs
+     nothing while the band is off-screen. */
+  const bands = [...document.querySelectorAll('.approach-band')];
+  if (bands.length && !reduceMotion && typeof gsap !== 'undefined') {
+    const SLACK = 28;                     // percent of slack, matches the image height in CSS
+    const media = bands
+      .map((b) => ({ band: b, el: b.querySelector('picture') || b.querySelector('img') }))
+      .filter((x) => x.el);
+
+    const update = () => {
+      const vh = innerHeight;
+      media.forEach(({ band, el }) => {
+        const r = band.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > vh) return;
+        // 0 as the band enters the bottom of the screen, 1 as it leaves the top
+        const p = Math.min(Math.max((vh - r.top) / (vh + r.height), 0), 1);
+        gsap.set(el, { yPercent: -SLACK * (1 - p) });
+      });
+    };
+    media.forEach(({ el }) => gsap.set(el, { yPercent: -SLACK }));
+    update();
+    addEventListener('scroll', update, { passive: true });
+    addEventListener('resize', update);
+    if (lenis) lenis.on('scroll', update);
+  }
+
   /* ---------- Footer: the time in Newcastle ---------- */
   const clock = document.querySelector('[data-local-time]');
   if (clock) {
