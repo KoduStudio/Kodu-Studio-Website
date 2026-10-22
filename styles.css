@@ -1050,7 +1050,7 @@ html.lock-scroll { overflow: hidden; }
 .site-footer__contact { grid-column: 5 / 7; }
 .site-footer__top     { grid-column: 10 / 11; }
 .site-footer__privacy { grid-column: 11 / 12; }
-.site-footer__copy    { grid-column: 12 / 13; color: var(--text-muted); }
+.site-footer__copy    { grid-column: 12 / 13; justify-self: end; color: var(--text-muted); }
 .site-footer__logo-link { display: block; width: 104px; }
 .site-footer__logo-link .brand__logo { margin: 0; height: 16px; }
 
