@@ -690,7 +690,9 @@
     const openGate = () => {
       if (gateOpen) return;
       gateOpen = true;
-      queued.forEach((el, i) => gsap.delayedCall(i * 0.12, () => paint(el)));
+      // The first block goes immediately — a delayedCall(0) would still cost a frame, and
+      // this is the one handing over from the hero.
+      queued.forEach((el, i) => { if (i) gsap.delayedCall(i * 0.12, () => paint(el)); else paint(el); });
       queued.length = 0;
     };
     window.koduOpenReveals = openGate;
@@ -1047,9 +1049,11 @@
       tl.to(brandLines, { y: 0, opacity: 1, duration: 0.9, stagger: 0.08, force3D: false }, 0.1)
         .to(navItems, { y: 0, opacity: 1, duration: 0.9, stagger: 0.06, force3D: false }, 0.3);
       if (lines.length) tl.to(lines, { yPercent: 0, duration: 1.0, stagger: 0.09, force3D: false }, 0.35);
-      // Let the body start a beat before the last hero line settles, so the two overlap
-      // rather than the page sitting still and then starting again.
-      tl.call(() => { if (window.koduOpenReveals) window.koduOpenReveals(); }, null, '>-0.35');
+      // Start the body while the last hero line is still visibly moving. power3.out does
+      // almost all of its travel early, so the hero reads as finished long before its tween
+      // ends: at 0.35s of overlap it is already 96% of the way there and the handover felt
+      // like a pause. 0.6s puts the body in at around 78%, which reads as one movement.
+      tl.call(() => { if (window.koduOpenReveals) window.koduOpenReveals(); }, null, '>-0.6');
     });
     return;
   }
