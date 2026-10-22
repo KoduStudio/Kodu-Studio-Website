@@ -840,22 +840,33 @@ html.lock-scroll { overflow: hidden; }
 
 /* ---------- Page intro (Approach + About) ---------- */
 .page-intro {
+  /* Four columns plus the four gutters before column 5 */
+  --intro-indent: calc(4 * ((100% - 11 * var(--column-gap)) / 12) + 4 * var(--column-gap));
   padding: var(--intro-top) var(--margin-main) var(--section-xl);
 }
 .page-intro__text {
+  --intro-lh: 1.1;
   font-weight: 500;
   font-size: var(--h3);
-  line-height: 1.1;
+  line-height: var(--intro-lh);
   color: var(--text-primary);
-  /* First line starts at column 5: four columns plus the four gutters before it */
-  text-indent: calc(4 * ((100% - 11 * var(--column-gap)) / 12) + 4 * var(--column-gap));
+}
+/* The first line starts at column 5. An empty float exactly four columns wide and one line
+   tall holds that space open: the opening line sits beside it, every line after it wraps
+   underneath. Unlike text-indent this does not inherit, so when main.js splits the text into
+   one block per line the indent cannot leak onto the rest of them. */
+.page-intro__text::before {
+  content: "";
+  float: left;
+  width: var(--intro-indent);
+  height: calc(1em * var(--intro-lh));
 }
 /* About leads with the serif */
 .page-intro--serif .page-intro__text {
+  --intro-lh: 1.08;
   font-family: var(--heading-font);
   font-weight: 400;
   font-size: var(--h2);
-  line-height: 1.08;
 }
 
 /* ---------- Approach block ---------- */
@@ -1052,7 +1063,7 @@ html.lock-scroll { overflow: hidden; }
   .site-footer {
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }
-  .page-intro__text { text-indent: 0; }
+  .page-intro__text::before { display: none; }
 
   .approach-header__title { grid-column: 1 / 7; }
   .approach-row { padding-bottom: 40px; row-gap: 20px; }
