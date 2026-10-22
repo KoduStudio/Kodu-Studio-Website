@@ -877,13 +877,19 @@ html.lock-scroll { overflow: hidden; }
   padding-bottom: 40px;
   border-bottom: 1px solid var(--rule);
 }
-.approach-header__title {
-  grid-column: 5 / 11;
-  margin: 0;
-  font-weight: 500;
+/* The section headings are the serif, like the page intros */
+.approach-header__title,
+.faq__title,
+.faq__lead {
+  font-family: var(--heading-font);
+  font-weight: 400;
   font-size: var(--h5);
   line-height: 1.24;
   color: var(--text-primary);
+}
+.approach-header__title {
+  grid-column: 5 / 11;
+  margin: 0;
 }
 
 .approach-row {
@@ -953,18 +959,10 @@ html.lock-scroll { overflow: hidden; }
   grid-column: 1 / 5;
   grid-row: 1;
   margin: 0;
-  font-weight: 500;
-  font-size: var(--h5);
-  line-height: 1.24;
-  color: var(--text-primary);
 }
 .faq__lead {
   grid-column: 5 / 11;
   grid-row: 1;
-  font-weight: 500;
-  font-size: var(--h5);
-  line-height: 1.24;
-  color: var(--text-primary);
 }
 .faq__list { list-style: none; margin: 0; padding: 0; }
 .faq-item { border-bottom: 1px solid var(--rule); }
