@@ -532,7 +532,15 @@
 
     const SWAP_AT = 0.35;
     tl.add(() => {
-      const clone = first ? makeClone(largestSrc(heroData), first) : null;
+      // Clone the file the teaser is actually displaying, not the largest jpg. The teaser
+      // renders a webp picked for its own box (around 2000w, 0.07MB) and already has it
+      // decoded; largestSrc asked for the full-width jpg (3000w, 0.54MB), which the page
+      // had never fetched — so the clone started empty and only filled in once that
+      // download landed, which is the white flash before the zoom. Same approach as the
+      // card → project and project → card clones.
+      const teaserImg = win && win.querySelector('img');
+      const cloneSrc = (teaserImg && (teaserImg.currentSrc || teaserImg.src)) || largestSrc(heroData);
+      const clone = first ? makeClone(cloneSrc, first) : null;
       let cloneImg = null;
       if (clone) {
         // Replicate the teaser exactly: the image fills the teaser's 16:9 box (centred, cover) and the
@@ -1291,7 +1299,13 @@
       const clone = makeClone(cardImg.currentSrc || cardImg.src, first);
       const cloneImg = clone.querySelector('img');
       cloneImg.sizes = SIZES[1];
-      cloneImg.srcset = imageSrcset(heroData);
+      /* The clone starts as the card's own cached image and upgrades to hero resolution as
+         it grows. Give it the srcset in the format the card itself took: defaulting to jpg
+         sent the browser after a file the page had never fetched, so the clone blanked
+         mid-zoom and flashed back when it finally arrived. In webp it is also the same file
+         the real hero underneath is loading, so the two share one download. */
+      const heroExt = /\.webp(\?|$)/.test(cardImg.currentSrc || '') ? 'webp' : 'jpg';
+      cloneImg.srcset = imageSrcset(heroData, heroExt);
       // Match the card's hover zoom at the moment of the click, then ease back to 1 in flight
       gsap.set(cloneImg, { scale: currentScale(cardImg), transformOrigin: '50% 50%' });
       tl.to(cloneImg, { scale: 1, duration: 1.15, ease: 'power3.inOut' }, SWAP_AT);
