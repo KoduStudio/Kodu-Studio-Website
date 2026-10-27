@@ -39,6 +39,11 @@
   --body-font: 'PP Neue Montreal', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --heading-font: 'Hedvig Letters Serif', Georgia, 'Times New Roman', serif;
 
+  /* The logo's mask box is taller than its glyphs by this much, because the artwork carries
+     padding so a rounded-off edge costs transparent margin instead of letterform. Every
+     logo size multiplies by it. Synced by scripts/logo.js — do not edit by hand. */
+  --logo-box-ratio: 1.17;
+
   /* Type scale, fluid between a 390px phone and the 1512px design width */
   --h2: clamp(1.9rem, 0.965rem + 3.741vw, 6.5rem);         /* 30.4 at 400 → 72 at 1512 → 104 */
   --h3: clamp(1.875rem, 1.223rem + 2.674vw, 5.5rem);       /* 30 → 60 at 1512 → 88 at 2560 */
@@ -162,7 +167,9 @@ img { display: block; max-width: 100%; }
    rolls as one piece on hover (no per-letter stagger). */
 .brand__link--logo .roll__text {
   height: 1.4em;                                  /* the line box the text occupied */
-  padding-top: 0.301em;                           /* lines the caps up with where the text sat */
+  /* 0.301em would line the caps up if the mask box were the glyphs exactly. The box now
+     carries padding, so it starts half of that higher to leave the glyphs where they were. */
+  padding-top: calc(0.301em - 0.758em * (var(--logo-box-ratio) - 1) / 2);
   transition: transform var(--roll-dur) cubic-bezier(0.22, 1, 0.36, 1);
 }
 .brand__link--logo:hover .roll__text,
@@ -171,8 +178,8 @@ img { display: block; max-width: 100%; }
 
 .brand__logo {
   display: block;
-  height: 0.758em;                                /* glyphs match the text's 11.9px height */
-  aspect-ratio: 965.71 / 144.57;
+  height: calc(0.758em * var(--logo-box-ratio));   /* glyphs match the text's 11.9px height */
+  aspect-ratio: 990.29 / 169.15;
   background: currentColor;
   -webkit-mask: url('icons/logo.svg') no-repeat center / 100% 100%;
           mask: url('icons/logo.svg') no-repeat center / 100% 100%;
@@ -1083,7 +1090,7 @@ html.lock-scroll { overflow: hidden; }
 .site-footer__privacy { grid-column: 11 / 12; }
 .site-footer__copy    { grid-column: 12 / 13; justify-self: end; color: var(--text-muted); }
 .site-footer__logo-link { display: block; width: 104px; }
-.site-footer__logo-link .brand__logo { margin: 0; height: 16px; }
+.site-footer__logo-link .brand__logo { margin: 0; height: calc(16px * var(--logo-box-ratio)); }
 
 /* ---------- Approach: tablet ---------- */
 @media (max-width: 1199px) {
