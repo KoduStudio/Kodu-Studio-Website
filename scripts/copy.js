@@ -45,6 +45,14 @@ const render = {
     '</p>',
   ].join('\n'),
 
+  // One paragraph on purpose: the About intro pairs each eyebrow with one .about__lead by
+  // index, so a second block here would shift every heading onto the wrong text.
+  'about.background': (c) => [
+    '<p class="about__lead" data-split>',
+    `  ${esc(one(c.about.background))}`,
+    '</p>',
+  ].join('\n'),
+
   'about.services': (c) => (c.about.services || []).map((s) => `<li>${esc(one(s))}</li>`).join('\n'),
 
   'about.social': (c) => (c.settings.socialLinks || []).map(({ label, url }) =>
@@ -106,7 +114,7 @@ const render = {
 
 /* ---------- marker injection ---------- */
 const PAGES = {
-  'about.html': ['about.intro', 'about.body', 'about.services', 'about.social'],
+  'about.html': ['about.intro', 'about.body', 'about.background', 'about.services', 'about.social'],
   'approach.html': ['approach.intro', 'approach.heading', 'approach.steps', 'approach.faqIntro', 'approach.faqs'],
   'privacy.html': ['privacy.intro', 'privacy.sections'],
 };

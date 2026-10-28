@@ -18,7 +18,7 @@ const CACHE = path.join(__dirname, 'content.json');
 // api, not apicdn: the CDN can serve a few seconds stale, and this build is usually
 // kicked off by a webhook fired the instant something is published.
 const QUERY = `{
-  "about": *[_id == "aboutPage"][0]{intro, body, services},
+  "about": *[_id == "aboutPage"][0]{intro, body, background, services},
   "approach": *[_id == "approachPage"][0]{intro, approachHeading, steps[]{name, description, tags}, faqIntro, faqs[]{question, answer}},
   "privacy": *[_id == "privacyPage"][0]{title, lastUpdated, sections[]{heading, body}},
   "settings": *[_id == "siteSettings"][0]{email, contactHeading, contactIntro, socialLinks[]{label, url}}

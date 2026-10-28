@@ -23,6 +23,14 @@ export const aboutPage = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: 'background',
+      title: 'My background',
+      type: 'text',
+      rows: 6,
+      description:
+        'How you got here — study, first job, how you ended up doing this. Keep it to one paragraph: the page pairs each heading with a single block of text.',
+    }),
+    defineField({
       name: 'services',
       title: 'What I do',
       type: 'array',
