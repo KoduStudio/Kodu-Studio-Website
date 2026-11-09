@@ -654,7 +654,7 @@
       });
     };
 
-    items.forEach((item) => {
+    items.forEach((item, i) => {
       const btn = item.querySelector('.faq-item__q');
       btn.addEventListener('click', () => {
         const open = btn.getAttribute('aria-expanded') === 'true';
@@ -662,7 +662,8 @@
         if (!open) items.forEach((other) => { if (other !== item) setOpen(other, false); });
         setOpen(item, !open);
       });
-      setOpen(item, false, false);
+      // The first answer starts open, so the block never reads as a wall of closed rows.
+      setOpen(item, i === 0, false);
     });
   }
 
