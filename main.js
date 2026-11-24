@@ -1092,8 +1092,15 @@
       const EASE = 0.12;        // how hard the field chases the pointer
       const FRICTION = 0.93;    // how fast a flick runs out
       // Each column travels at its own rate, which is what makes the field read as depth
-      // instead of one flat sheet sliding around. Cycled, so any column count works.
-      const SPEEDS = [1, 0.84, 1.14, 0.92, 1.06, 0.8, 1.2];
+      // instead of one flat sheet sliding around. A wide spread on purpose: at ±20% the
+      // columns still looked locked together. Cycled, so any column count works, and no two
+      // values repeat inside the six columns a wide screen uses.
+      const SPEEDS = [1, 0.55, 1.45, 0.72, 1.28, 0.62, 1.15];
+      // Momentum. The faster you are travelling, the further the quick columns run ahead of
+      // the slow ones, and it relaxes back as you come to rest. It has to be an offset added
+      // to the position rather than a change of speed: speed multiplies a position that is
+      // already thousands of pixels deep, so nudging it would teleport the column.
+      const LEAD = 9;
 
       const srcset = (t, ext) => (ext === 'webp' ? t.widths : t.jpgWidths)
         .map((w) => siteUrl(t.src + '-' + w + '.' + ext) + ' ' + w + 'w').join(', ');
@@ -1118,6 +1125,8 @@
 
       let blockW = 0, wrapper = null;
       let columns = [];                // one entry per column element currently on screen
+      let flow = 0;                    // smoothed vertical travel, drives the lead above
+      let prevY = 0;
       const pos = { x: 0, y: 0 };      // where the field is drawn
       const aim = { x: 0, y: 0 };      // where it is heading
       const vel = { x: 0, y: 0 };
@@ -1197,7 +1206,10 @@
         wrapper.style.transform = 'translate3d(' + (mod(pos.x, blockW) - blockW) + 'px,0,0)';
         for (let i = 0; i < columns.length; i++) {
           const c = columns[i];
-          c.el.style.transform = 'translate3d(0,' + (mod(pos.y * c.speed, c.h) - c.h) + 'px,0)';
+          // The sign of `flow` flips with your direction, so whichever way you go it is the
+          // quick columns that lead and the slow ones that trail.
+          const y = pos.y * c.speed + (c.speed - 1) * flow * LEAD;
+          c.el.style.transform = 'translate3d(0,' + (mod(y, c.h) - c.h) + 'px,0)';
         }
       }
 
@@ -1264,6 +1276,11 @@
         }
         if (reduceMotion) { pos.x = aim.x; pos.y = aim.y; }
         else { pos.x += (aim.x - pos.x) * EASE; pos.y += (aim.y - pos.y) * EASE; }
+        // How far the field actually travelled this frame, smoothed so the lead eases in
+        // and out instead of snapping the moment you start or stop.
+        const frame = pos.y - prevY;
+        prevY = pos.y;
+        flow += ((reduceMotion ? 0 : frame) - flow) * 0.08;
         draw();
       });
 
