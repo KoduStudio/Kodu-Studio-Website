@@ -51,14 +51,13 @@ remove files in **`content/_playground/`** and run the build — nothing else to
 - Identical files are skipped automatically, so OneDrive "- Copy" duplicates are harmless.
 - The originals are **not in git** (they are 100MB+). They live on this Mac only; the tiles
   the build makes from them are committed, so the site never misses them. Keep a backup.
-- There are two views, a grid and a single looping row, toggled bottom right. The choice is
-  remembered per visitor in `localStorage`.
 - The underscore keeps the folder out of the project scan, and `content/` is in
   `.vercelignore`, so the originals never deploy.
 
-The grid repeats one block of every image in both directions. That only tiles seamlessly if
-every column is the same height, so the build packs them shortest-column-first and the
-leftover is shared between that column's gaps — nothing is cropped or rescaled to fit.
+Columns repeat sideways as a block, but each one wraps vertically on its own height and at
+its own speed, so the field reads as depth rather than one flat sheet. Column widths and
+gutters are ratios of the viewport (4.44 columns across, gutter 0.55 of a column), so the
+spacing holds from a phone to a large display.
 
 ## Staging
 

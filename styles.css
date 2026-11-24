@@ -1363,15 +1363,18 @@ html.has-cursor .playground__field,
 html.has-cursor .pg-tile { cursor: none; }
 
 .pg-wrap,
-.pg-block {
+.pg-col {
   position: absolute;
   top: 0;
   left: 0;
 }
-.pg-wrap { will-change: transform; }
+/* Each column is transformed on its own, so each gets its own compositor layer. */
+.pg-wrap,
+.pg-col { will-change: transform; }
 
 .pg-tile {
   position: absolute;
+  left: 0;
   padding: 0;
   border: 0;
   border-radius: 4px;
@@ -1460,61 +1463,4 @@ html.has-cursor .pg-tile { cursor: none; }
 [data-view="playground"] .nav {
   align-items: center;
   gap: 20px;
-}
-
-/* Grid / row toggle. Collapsed to a disc, opening into a pill on hover or keyboard focus:
-   the label is the view it switches TO, so the button reads as the action. */
-.pg-view {
-  position: absolute;
-  right: var(--margin-main);
-  bottom: var(--margin-main);
-  z-index: 55;
-  display: flex;
-  align-items: center;
-  gap: 0;
-  height: 52px;
-  padding: 0;
-  border: 0;
-  border-radius: 999px;
-  background: var(--text-primary);
-  color: var(--bg-base);
-  font-family: inherit;
-  font-size: var(--label-md);
-  letter-spacing: 0.01em;
-  cursor: pointer;
-  transition: gap 0.32s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.pg-view__label {
-  display: block;
-  max-width: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  opacity: 0;
-  transition: max-width 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease, padding 0.32s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.pg-view__icon {
-  display: grid;
-  place-items: center;
-  width: 52px;
-  height: 52px;
-  flex: 0 0 52px;
-}
-.pg-view__icon svg { width: 20px; height: 20px; }
-
-.pg-view:hover .pg-view__label,
-.pg-view:focus-visible .pg-view__label {
-  max-width: 160px;
-  padding-left: 22px;
-  opacity: 1;
-}
-.pg-view:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 3px; }
-html.has-cursor .pg-view { cursor: none; }
-
-/* Touch has no hover, so the label is simply always there. */
-@media (hover: none) {
-  .pg-view__label { max-width: 160px; padding-left: 22px; opacity: 1; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .pg-view, .pg-view__label { transition: none; }
 }

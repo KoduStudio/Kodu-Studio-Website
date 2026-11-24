@@ -1084,155 +1084,121 @@
     if (field && TILES.length) {
       lockScroll('playground');
 
-      // The reference field is mostly air: the gap runs a little under half a tile wide, and
-      // that space is what stops a wall of mockups reading as a contact sheet. Proportional
-      // rather than fixed, so it holds at every column width.
-      const GAP_RATIO = 0.42;
+      // Taken from the reference: a constant 4.44 columns across the viewport at any size,
+      // with a gutter a little over half a column wide. Both are ratios rather than pixel
+      // sizes, so the field reads the same on a laptop and on a large display.
+      const GAP_RATIO = 0.554;
+      const ACROSS_WIDE = 4.44;
       const EASE = 0.12;        // how hard the field chases the pointer
       const FRICTION = 0.93;    // how fast a flick runs out
+      // Each column travels at its own rate, which is what makes the field read as depth
+      // instead of one flat sheet sliding around. Cycled, so any column count works.
+      const SPEEDS = [1, 0.84, 1.14, 0.92, 1.06, 0.8, 1.2];
+
       const srcset = (t, ext) => (ext === 'webp' ? t.widths : t.jpgWidths)
         .map((w) => siteUrl(t.src + '-' + w + '.' + ext) + ' ' + w + 'w').join(', ');
       const biggest = (t) => siteUrl(t.src + '-' + t.widths[t.widths.length - 1] + '.webp');
       const fallback = (t) => siteUrl(t.src + '-' + t.jpgWidths[t.jpgWidths.length - 1] + '.jpg');
 
-      // Enough columns that the block is wider than the screen, so the same image rarely
-      // appears twice at once.
       function metrics() {
         const vw = innerWidth;
-        let cols, colW;
-        if (vw >= 1400) { cols = 6; colW = 260; }
-        else if (vw >= 1100) { cols = 5; colW = 240; }
-        else if (vw >= 760) { cols = 4; colW = 210; }
-        else if (vw >= 520) { cols = 3; colW = 180; }
-        else { cols = 2; colW = 150; }
-
-        // The block has to be wider than the screen, or its horizontal repeat puts the same
-        // image on screen twice and the field stops reading as endless. Phones are where
-        // that bites, so widen the columns until the block clears the viewport.
-        const minBlock = vw + colW * 0.5;
-        if (cols * (colW + colW * GAP_RATIO) < minBlock) {
-          colW = Math.ceil(minBlock / cols / (1 + GAP_RATIO));
-        }
-        return { cols, colW, gap: Math.round(colW * GAP_RATIO) };
+        let across;
+        if (vw >= 1100) across = ACROSS_WIDE;
+        else if (vw >= 760) across = 3.6;
+        else if (vw >= 520) across = 2.8;
+        else across = 2.0;                      // a phone cannot carry four of anything
+        const pitch = vw / across;
+        const colW = Math.round(pitch / (1 + GAP_RATIO));
+        const gap = Math.round(pitch - colW);
+        // One more column than fits across, so the block is always wider than the screen.
+        // Otherwise its horizontal repeat puts the same image on screen twice and the field
+        // stops reading as endless.
+        return { cols: Math.ceil(across) + 1, colW, gap, pitch: colW + gap };
       }
 
-      // Row view: the same images in one horizontal line, much larger, looping sideways
-      // for ever. Height-led rather than width-led, because a single row has to fit the
-      // screen vertically whatever shape the image is.
-      function rowMetrics() {
-        const { colW } = metrics();
-        const rowH = Math.round(Math.min(innerHeight * 0.66, colW * 2.5));
-        return { rowH, gap: Math.round(rowH * 0.12) };
-      }
-
-      let blockW = 0, blockH = 0, wrapper = null;
+      let blockW = 0, wrapper = null;
+      let columns = [];                // one entry per column element currently on screen
       const pos = { x: 0, y: 0 };      // where the field is drawn
       const aim = { x: 0, y: 0 };      // where it is heading
       const vel = { x: 0, y: 0 };
       let frozen = false;              // true while an image is open
-      let mode = 'grid';
-      try { mode = localStorage.getItem('kodu-playground-view') === 'row' ? 'row' : 'grid'; } catch (e) {}
 
-      function tileEl(t, w, h, left, top) {
+      function tileEl(t, w, h, top, focusable) {
         const el = document.createElement('button');
         el.type = 'button';
         el.className = 'pg-tile';
-        el.style.cssText = 'left:' + left + 'px;top:' + top + 'px;width:' + w + 'px;height:' + h + 'px';
+        el.style.cssText = 'top:' + top + 'px;width:' + w + 'px;height:' + h + 'px';
         el.dataset.slug = t.slug;
         el.setAttribute('aria-label', 'Open image');
+        if (!focusable) el.tabIndex = -1;
         // The tile box is the image's own aspect ratio, so opening it is a straight
         // uniform scale — no letterboxing and no distortion to correct for.
         el.innerHTML =
           '<picture>' +
-            '<source type="image/webp" srcset="' + srcset(t, 'webp') + '" sizes="' + Math.round(w) + 'px">' +
-            '<img src="' + fallback(t) + '" srcset="' + srcset(t, 'jpg') + '" sizes="' + Math.round(w) + 'px" ' +
+            '<source type="image/webp" srcset="' + srcset(t, 'webp') + '" sizes="' + w + 'px">' +
+            '<img src="' + fallback(t) + '" srcset="' + srcset(t, 'jpg') + '" sizes="' + w + 'px" ' +
             'alt="" draggable="false" decoding="async">' +
           '</picture>';
         return el;
       }
 
-      function buildRowBlock() {
-        const { rowH, gap } = rowMetrics();
-        const block = document.createElement('div');
-        block.className = 'pg-block';
-        const top = Math.round((innerHeight - rowH) / 2);
-        let x = 0;
-        TILES.forEach((t) => {
-          const w = Math.round(rowH * t.w / t.h);
-          block.appendChild(tileEl(t, w, rowH, Math.round(x), top));
-          x += w + gap;
-        });
-        blockW = Math.round(x);
-        blockH = innerHeight;
-        block.style.width = blockW + 'px';
-        block.style.height = blockH + 'px';
-        return block;
-      }
-
-      function buildGridBlock() {
-        const { cols, colW, gap } = metrics();
-        const columns = Array.from({ length: cols }, () => ({ items: [], h: 0 }));
-        TILES.forEach((t) => {
-          const col = columns.reduce((a, b) => (b.h < a.h ? b : a));
-          const h = Math.round(colW * t.h / t.w);
-          col.items.push({ t, h });
-          col.h += h + gap;
-        });
-
-        const H = Math.round(Math.max.apply(null, columns.map((c) => c.h)));
-        const block = document.createElement('div');
-        block.className = 'pg-block';
-
-        columns.forEach((col, ci) => {
-          const slack = (H - col.h) / Math.max(1, col.items.length);
-          let y = 0;
-          col.items.forEach(({ t, h }) => {
-            block.appendChild(tileEl(t, colW, h, ci * (colW + gap), Math.round(y)));
-            y += h + gap + slack;
-          });
-        });
-
-        blockW = cols * (colW + gap);
-        blockH = H;
-        block.style.width = blockW + 'px';
-        block.style.height = blockH + 'px';
-        return block;
-      }
-
+      /* Columns wrap vertically one at a time, each on its own height. That is what lets
+         them move at different speeds, and it means they no longer have to be equal: the
+         packing below only has to get them close, not exact. */
       function layout() {
-        const block = mode === 'row' ? buildRowBlock() : buildGridBlock();
-        // floor + 2, not ceil + 1. Both cover the viewport on paper, but ceil + 1 leaves
-        // exactly zero margin when the block divides the viewport evenly (a 1024 block on a
-        // 1024 screen), and a sub-pixel rounding there opens a 1px seam. floor + 2 always
-        // keeps a whole block spare, and still comes to 2 copies on any normal screen.
-        const cx = Math.floor(innerWidth / blockW) + 2;
-        // A row is one block tall by definition: it only ever loops sideways.
-        const cy = mode === 'row' ? 1 : Math.floor(innerHeight / blockH) + 2;
+        const { cols, colW, gap, pitch } = metrics();
+
+        const buckets = Array.from({ length: cols }, () => ({ items: [], h: 0 }));
+        TILES.forEach((t) => {
+          const b = buckets.reduce((a, c) => (c.h < a.h ? c : a));
+          const h = Math.round(colW * t.h / t.w);
+          b.items.push({ t, h });
+          b.h += h + gap;
+        });
+
+        blockW = cols * pitch;
+        const copies = Math.floor(innerWidth / blockW) + 2;
+
         const wrap = document.createElement('div');
         wrap.className = 'pg-wrap';
-        for (let j = 0; j < cy; j++) {
-          for (let i = 0; i < cx; i++) {
-            const copy = (i === 0 && j === 0) ? block : block.cloneNode(true);
-            copy.style.transform = 'translate3d(' + (i * blockW) + 'px,' + (j * blockH) + 'px,0)';
-            // Only the first block is reachable by keyboard: the copies are the same 33
-            // images again, and nobody wants to tab through them four times.
-            if (i || j) {
-              copy.setAttribute('aria-hidden', 'true');
-              copy.querySelectorAll('.pg-tile').forEach((t) => { t.tabIndex = -1; });
+        columns = [];
+
+        for (let c = 0; c < copies; c++) {
+          buckets.forEach((b, ci) => {
+            const el = document.createElement('div');
+            el.className = 'pg-col';
+            el.style.cssText = 'left:' + ((c * cols + ci) * pitch) + 'px;width:' + colW + 'px';
+            // Enough repeats that the column still covers the screen at any offset.
+            const reps = Math.ceil(innerHeight / b.h) + 2;
+            let y = 0;
+            for (let r = 0; r < reps; r++) {
+              b.items.forEach(({ t, h }) => {
+                // Only the first copy of the first repeat is reachable by keyboard: the rest
+                // are the same images again, and nobody wants to tab through them six times.
+                el.appendChild(tileEl(t, colW, h, Math.round(y), c === 0 && r === 0));
+                y += h + gap;
+              });
             }
-            wrap.appendChild(copy);
-          }
+            if (c) el.setAttribute('aria-hidden', 'true');
+            wrap.appendChild(el);
+            columns.push({ el, speed: SPEEDS[ci % SPEEDS.length], h: b.h });
+          });
         }
+
         wrapper = wrap;
         field.replaceChildren(wrap);
         draw();
       }
 
       const mod = (v, m) => ((v % m) + m) % m;
-      // Shifted a whole block left/up so the wrapper always overhangs the top-left corner.
+      // The wrapper carries the horizontal wrap, each column its own vertical one. Both are
+      // shifted a full period so the content always overhangs the top-left corner.
       function draw() {
-        const ty = mode === 'row' ? 0 : mod(pos.y, blockH) - blockH;
-        wrapper.style.transform = 'translate3d(' + (mod(pos.x, blockW) - blockW) + 'px,' + ty + 'px,0)';
+        wrapper.style.transform = 'translate3d(' + (mod(pos.x, blockW) - blockW) + 'px,0,0)';
+        for (let i = 0; i < columns.length; i++) {
+          const c = columns[i];
+          c.el.style.transform = 'translate3d(0,' + (mod(pos.y * c.speed, c.h) - c.h) + 'px,0)';
+        }
       }
 
       /* ---------- panning ---------- */
@@ -1256,9 +1222,7 @@
 
       field.addEventListener('pointermove', (e) => {
         if (!dragging || frozen) return;
-        const dx = e.clientX - lastX;
-        // A row only moves sideways, so vertical drag is dropped rather than fought with.
-        const dy = mode === 'row' ? 0 : e.clientY - lastY;
+        const dx = e.clientX - lastX, dy = e.clientY - lastY;
         lastX = e.clientX; lastY = e.clientY;
         aim.x += dx; aim.y += dy;
         vel.x = dx; vel.y = dy;
@@ -1284,13 +1248,8 @@
       field.addEventListener('wheel', (e) => {
         if (frozen) return;
         e.preventDefault();
-        if (mode === 'row') {
-          // Both axes drive the carousel, so an ordinary mouse wheel moves it too.
-          aim.x -= e.deltaX + e.deltaY;
-        } else {
-          aim.x -= e.deltaX;
-          aim.y -= e.deltaY;
-        }
+        aim.x -= e.deltaX;
+        aim.y -= e.deltaY;
         vel.x = vel.y = 0;
         hideHint();
       }, { passive: false });
@@ -1412,34 +1371,6 @@
       addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && openEl) closeImage();
       });
-
-      /* ---------- grid / row toggle ----------
-         Sits bottom right, collapsed to a disc and opening into a pill on hover or focus.
-         It names the view it will switch you to, so the button reads as the action. */
-      const GRID_ICON = lucide('<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>');
-      const ROW_ICON = lucide('<rect x="2" y="7" width="6" height="10" rx="1"/><rect x="10" y="7" width="6" height="10" rx="1"/><rect x="18" y="7" width="6" height="10" rx="1"/>');
-
-      const viewBtn = document.createElement('button');
-      viewBtn.type = 'button';
-      viewBtn.className = 'pg-view';
-      function paintBtn() {
-        const next = mode === 'grid' ? 'Row view' : 'Grid view';
-        viewBtn.innerHTML = '<span class="pg-view__label">' + next + '</span>' +
-          '<span class="pg-view__icon">' + (mode === 'grid' ? ROW_ICON : GRID_ICON) + '</span>';
-        viewBtn.setAttribute('aria-label', 'Switch to ' + next.toLowerCase());
-      }
-      paintBtn();
-      viewBtn.addEventListener('click', () => {
-        if (openEl) closeImage();
-        mode = mode === 'grid' ? 'row' : 'grid';
-        try { localStorage.setItem('kodu-playground-view', mode); } catch (e) {}
-        // Start the new view from a clean position: carrying a grid's vertical offset into
-        // a row would land you in the middle of nowhere.
-        pos.x = pos.y = aim.x = aim.y = vel.x = vel.y = 0;
-        paintBtn();
-        layout();
-      });
-      field.parentNode.appendChild(viewBtn);
 
       /* ---------- resize ---------- */
       let resizeTimer = 0;
