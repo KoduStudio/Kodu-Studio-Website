@@ -1132,10 +1132,6 @@
       let columns = [];                // one entry per column element currently on screen
       let flow = 0;                    // smoothed vertical travel, drives the lead above
       let prevY = 0;
-      // 1 while the page is still arriving, 0 once it has settled. draw() reads it, rather
-      // than GSAP tweening the columns directly: the ticker rewrites every column transform
-      // every frame, so a tween on the same property would be overwritten instantly.
-      const intro = { off: 0 };
       const pos = { x: 0, y: 0 };      // where the field is drawn
       const aim = { x: 0, y: 0 };      // where it is heading
       const vel = { x: 0, y: 0 };
@@ -1217,9 +1213,7 @@
           const c = columns[i];
           // The sign of `flow` flips with your direction, so whichever way you go it is the
           // quick columns that lead and the slow ones that trail.
-          // The quick columns also travel furthest on the way in, so the load reads as the
-          // same parallax the field runs on rather than a separate effect bolted in front.
-          const y = pos.y * c.speed + (c.speed - 1) * flow * LEAD + intro.off * 90 * c.speed;
+          const y = pos.y * c.speed + (c.speed - 1) * flow * LEAD;
           c.el.style.transform = 'translate3d(0,' + (mod(y, c.h) - c.h) + 'px,0)';
         }
       }
@@ -1421,36 +1415,28 @@
       });
 
       /* ---------- the way in ----------
-         A sweep of the brand gradient covers the field, then lifts, and the columns come up
-         behind it one after another. Everything here is opacity and transform on a handful
-         of elements — six columns and one panel, not 198 tiles. */
-      function runIntro() {
+         Nothing but a fade: the page sits empty, then the columns arrive one after another.
+         Opacity on a handful of column elements, never on the 198 tiles inside them. */
+      function playIntro() {
         const frames = [...document.querySelectorAll('.brand, .nav')];
         // Nothing to undo in the reduced-motion case: the field is simply already there.
         if (reduceMotion || typeof gsap === 'undefined') { startHintTimer(); return; }
 
-        const sweep = document.createElement('div');
-        sweep.className = 'pg-sweep';
-        field.parentNode.appendChild(sweep);
-
         gsap.set(columns.map((c) => c.el), { autoAlpha: 0 });
         gsap.set(frames, { autoAlpha: 0, y: 10 });
         if (hint) gsap.set(hint, { autoAlpha: 0 });
-        intro.off = 1;
 
-        const tl = gsap.timeline({ onComplete: () => { sweep.remove(); startHintTimer(); } });
-        tl.to(sweep, { yPercent: -100, duration: 1.15, ease: 'power3.inOut' }, 0.15);
+        const tl = gsap.timeline({ onComplete: startHintTimer });
         // Keyed to the column index, so both horizontal copies of a column arrive together.
         columns.forEach((c) => {
-          tl.to(c.el, { autoAlpha: 1, duration: 0.6, ease: 'power2.out' }, 0.4 + c.index * 0.075);
+          tl.to(c.el, { autoAlpha: 1, duration: 0.7, ease: 'power2.out' }, 0.1 + c.index * 0.08);
         });
-        tl.to(intro, { off: 0, duration: 1.5, ease: 'power3.out' }, 0.4);
-        tl.to(frames, { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.08, ease: 'power3.out' }, 0.75);
-        if (hint) tl.to(hint, { autoAlpha: 1, duration: 0.5 }, 1.1);
+        tl.to(frames, { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.08, ease: 'power3.out' }, 0.2);
+        if (hint) tl.to(hint, { autoAlpha: 1, duration: 0.5 }, 0.6);
       }
 
       layout();
-      runIntro();
+      playIntro();
     }
     return;
   }
