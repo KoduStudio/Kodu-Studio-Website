@@ -1395,16 +1395,11 @@ html.has-cursor .pg-tile { cursor: none; }
 }
 .pg-tile:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 3px; }
 
-/* Framed like the header for the same reason: it sits over whatever image happens to be
-   underneath it, and plain text on a photograph is unreadable. */
 .playground__hint {
   position: absolute;
   left: var(--margin-main);
   bottom: var(--margin-main);
   margin: 0;
-  padding: 12px;
-  border-radius: 4px;
-  background: var(--bg-base);
   font-size: var(--label-md);
   color: var(--text-muted);
   pointer-events: none;
@@ -1440,28 +1435,16 @@ html.has-cursor .pg-tile { cursor: none; }
 }
 
 /* On the playground the field runs the full viewport and the header sits over it, so the
-   images carry on behind the chrome. The brand and the nav each get their own frame, which
-   is what keeps them readable once a photograph is sliding underneath. */
+   images carry on behind the chrome, unboxed. */
 [data-view="playground"] .site-header {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 50;
-  pointer-events: none;      /* the gaps between the frames stay draggable */
+  pointer-events: none;      /* the empty space around the brand and nav stays draggable */
 }
 [data-view="playground"] .site-header > * { pointer-events: auto; }
 
 [data-view="playground"] .playground { position: fixed; inset: 0; }
 
-[data-view="playground"] .brand,
-[data-view="playground"] .nav {
-  padding: 12px;
-  background: var(--bg-base);
-  border-radius: 4px;
-}
-/* The nav is one frame around the whole set, not a box per link. */
-[data-view="playground"] .nav {
-  align-items: center;
-  gap: 20px;
-}
