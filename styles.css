@@ -44,6 +44,10 @@
      logo size multiplies by it. Synced by scripts/logo.js — do not edit by hand. */
   --logo-box-ratio: 1.17;
 
+  /* Brand gradient — Figma "Wallpaper | MacBook Pro" (node 2046-2). Fixed artwork, not a
+     themed colour: it reads the same in light and dark. */
+  --brand-gradient: linear-gradient(180deg, #f0e1ce 4.37%, #93511d 43.96%, #3d2a23 78.29%, #101010 103.08%);
+
   /* Type scale, fluid between a 390px phone and the 1512px design width */
   --h2: clamp(1.9rem, 0.965rem + 3.741vw, 6.5rem);         /* 30.4 at 400 → 72 at 1512 → 104 */
   --h3: clamp(1.875rem, 1.223rem + 2.674vw, 5.5rem);       /* 30 → 60 at 1512 → 88 at 2560 */
@@ -1463,4 +1467,15 @@ html.has-cursor .pg-tile { cursor: none; }
 [data-view="playground"] .nav {
   align-items: center;
   gap: 20px;
+}
+
+/* The sweep that covers the playground on load and then lifts away. Removed from the DOM
+   once it has played, so it costs nothing after the first second. */
+.pg-sweep {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  background: var(--brand-gradient);
+  will-change: transform;
+  pointer-events: none;
 }

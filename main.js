@@ -1092,10 +1092,15 @@
       const EASE = 0.12;        // how hard the field chases the pointer
       const FRICTION = 0.93;    // how fast a flick runs out
       // Each column travels at its own rate, which is what makes the field read as depth
-      // instead of one flat sheet sliding around. A wide spread on purpose: at ±20% the
-      // columns still looked locked together. Cycled, so any column count works, and no two
-      // values repeat inside the six columns a wide screen uses.
-      const SPEEDS = [1, 0.55, 1.45, 0.72, 1.28, 0.62, 1.15];
+      // instead of one flat sheet sliding around.
+      //
+      // The order matters as much as the values. Laid out fast, slow, fast, slow it reads as
+      // a mechanism rather than drift, so these wander: down, up, down, down, up, down.
+      //
+      // Watch the wrap when changing them. Columns repeat sideways, so the last one sits
+      // next to the first on screen and that pair has to differ too — every neighbour here,
+      // the wrap included, is at least 0.1 apart at any column count.
+      const SPEEDS = [1, 0.9, 1.22, 1.12, 0.78, 1.14, 0.86];
       // Momentum. The faster you are travelling, the further the quick columns run ahead of
       // the slow ones, and it relaxes back as you come to rest. It has to be an offset added
       // to the position rather than a change of speed: speed multiplies a position that is
@@ -1127,6 +1132,10 @@
       let columns = [];                // one entry per column element currently on screen
       let flow = 0;                    // smoothed vertical travel, drives the lead above
       let prevY = 0;
+      // 1 while the page is still arriving, 0 once it has settled. draw() reads it, rather
+      // than GSAP tweening the columns directly: the ticker rewrites every column transform
+      // every frame, so a tween on the same property would be overwritten instantly.
+      const intro = { off: 0 };
       const pos = { x: 0, y: 0 };      // where the field is drawn
       const aim = { x: 0, y: 0 };      // where it is heading
       const vel = { x: 0, y: 0 };
@@ -1190,7 +1199,7 @@
             }
             if (c) el.setAttribute('aria-hidden', 'true');
             wrap.appendChild(el);
-            columns.push({ el, speed: SPEEDS[ci % SPEEDS.length], h: b.h });
+            columns.push({ el, index: ci, speed: SPEEDS[ci % SPEEDS.length], h: b.h });
           });
         }
 
@@ -1208,7 +1217,9 @@
           const c = columns[i];
           // The sign of `flow` flips with your direction, so whichever way you go it is the
           // quick columns that lead and the slow ones that trail.
-          const y = pos.y * c.speed + (c.speed - 1) * flow * LEAD;
+          // The quick columns also travel furthest on the way in, so the load reads as the
+          // same parallax the field runs on rather than a separate effect bolted in front.
+          const y = pos.y * c.speed + (c.speed - 1) * flow * LEAD + intro.off * 90 * c.speed;
           c.el.style.transform = 'translate3d(0,' + (mod(y, c.h) - c.h) + 'px,0)';
         }
       }
@@ -1293,7 +1304,9 @@
         if (reduceMotion) hint.style.display = 'none';
         else gsap.to(hint, { autoAlpha: 0, duration: 0.4, onComplete: () => hint.remove() });
       }
-      if (hint) setTimeout(hideHint, 6000);
+      // Started once the load has finished rather than at script time, so the hint gets its
+      // full few seconds on screen instead of beginning to fade while it is still arriving.
+      const startHintTimer = () => { if (hint) setTimeout(hideHint, 6000); };
 
       /* ---------- open one larger ---------- */
       let openEl = null, openTile = null, openData = null;
@@ -1407,9 +1420,39 @@
         }, 180);
       });
 
+      /* ---------- the way in ----------
+         A sweep of the brand gradient covers the field, then lifts, and the columns come up
+         behind it one after another. Everything here is opacity and transform on a handful
+         of elements — six columns and one panel, not 198 tiles. */
+      function runIntro() {
+        const frames = [...document.querySelectorAll('.brand, .nav')];
+        // Nothing to undo in the reduced-motion case: the field is simply already there.
+        if (reduceMotion || typeof gsap === 'undefined') { startHintTimer(); return; }
+
+        const sweep = document.createElement('div');
+        sweep.className = 'pg-sweep';
+        field.parentNode.appendChild(sweep);
+
+        gsap.set(columns.map((c) => c.el), { autoAlpha: 0 });
+        gsap.set(frames, { autoAlpha: 0, y: 10 });
+        if (hint) gsap.set(hint, { autoAlpha: 0 });
+        intro.off = 1;
+
+        const tl = gsap.timeline({ onComplete: () => { sweep.remove(); startHintTimer(); } });
+        tl.to(sweep, { yPercent: -100, duration: 1.15, ease: 'power3.inOut' }, 0.15);
+        // Keyed to the column index, so both horizontal copies of a column arrive together.
+        columns.forEach((c) => {
+          tl.to(c.el, { autoAlpha: 1, duration: 0.6, ease: 'power2.out' }, 0.4 + c.index * 0.075);
+        });
+        tl.to(intro, { off: 0, duration: 1.5, ease: 'power3.out' }, 0.4);
+        tl.to(frames, { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.08, ease: 'power3.out' }, 0.75);
+        if (hint) tl.to(hint, { autoAlpha: 1, duration: 0.5 }, 1.1);
+      }
+
       layout();
+      runIntro();
     }
-      return;
+    return;
   }
 
   /* ---------- Homepage ---------- */

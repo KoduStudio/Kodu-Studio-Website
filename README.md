@@ -54,6 +54,9 @@ remove files in **`content/_playground/`** and run the build — nothing else to
 - The underscore keeps the folder out of the project scan, and `content/` is in
   `.vercelignore`, so the originals never deploy.
 
+It arrives behind a sweep of the brand gradient (`--brand-gradient`, from the Figma
+wallpaper), which lifts away as the columns come up one after another.
+
 Columns repeat sideways as a block, but each one wraps vertically on its own height and at
 its own speed, so the field reads as depth rather than one flat sheet. Column widths and
 gutters are ratios of the viewport (4.44 columns across, gutter 0.55 of a column), so the
