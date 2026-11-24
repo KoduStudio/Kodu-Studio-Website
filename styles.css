@@ -1340,3 +1340,181 @@ html.lock-scroll { overflow: hidden; }
   .policy-item__body { grid-column: 2 / 7; }
 }
 /* END PRIVACY POLICY */
+
+/* ---------- Playground ----------
+   A fixed, non-scrolling field: the page itself is locked (html.lock-scroll) and all the
+   movement happens on .pg-wrap's transform, so nothing here reflows while you drag. */
+.playground {
+  position: relative;
+  flex: 1 1 auto;
+  overflow: hidden;
+  min-height: 0;          /* so the flex child can actually shrink to the viewport */
+}
+
+.playground__field {
+  position: absolute;
+  inset: 0;
+  touch-action: none;     /* the drag is ours; stop the browser scrolling or zooming instead */
+  overscroll-behavior: contain;
+  cursor: grab;
+}
+.playground__field.is-dragging { cursor: grabbing; }
+html.has-cursor .playground__field,
+html.has-cursor .pg-tile { cursor: none; }
+
+.pg-wrap,
+.pg-block {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.pg-wrap { will-change: transform; }
+
+.pg-tile {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--card-placeholder);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.pg-tile picture { display: block; width: 100%; height: 100%; }
+.pg-tile img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.pg-tile:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 3px; }
+
+/* Framed like the header for the same reason: it sits over whatever image happens to be
+   underneath it, and plain text on a photograph is unreadable. */
+.playground__hint {
+  position: absolute;
+  left: var(--margin-main);
+  bottom: var(--margin-main);
+  margin: 0;
+  padding: 12px;
+  border-radius: 4px;
+  background: var(--bg-base);
+  font-size: var(--label-md);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+/* The opened image. Larger, but never full screen: the field stays visible around it so it
+   reads as one picture lifted off the grid rather than a new page. */
+.pg-open {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  cursor: zoom-out;
+}
+/* A dark scrim rather than the page background: it has to read as a dim over the field in
+   BOTH themes (var(--bg-base) would be white in light mode), and stay sheer enough that the
+   grid is still legible behind the open image. */
+.pg-open__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+.pg-open__img {
+  position: absolute;
+  display: block;
+  object-fit: contain;
+  border-radius: 4px;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pg-wrap { will-change: auto; }
+}
+
+/* On the playground the field runs the full viewport and the header sits over it, so the
+   images carry on behind the chrome. The brand and the nav each get their own frame, which
+   is what keeps them readable once a photograph is sliding underneath. */
+[data-view="playground"] .site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  pointer-events: none;      /* the gaps between the frames stay draggable */
+}
+[data-view="playground"] .site-header > * { pointer-events: auto; }
+
+[data-view="playground"] .playground { position: fixed; inset: 0; }
+
+[data-view="playground"] .brand,
+[data-view="playground"] .nav {
+  padding: 12px;
+  background: var(--bg-base);
+  border-radius: 4px;
+}
+/* The nav is one frame around the whole set, not a box per link. */
+[data-view="playground"] .nav {
+  align-items: center;
+  gap: 20px;
+}
+
+/* Grid / row toggle. Collapsed to a disc, opening into a pill on hover or keyboard focus:
+   the label is the view it switches TO, so the button reads as the action. */
+.pg-view {
+  position: absolute;
+  right: var(--margin-main);
+  bottom: var(--margin-main);
+  z-index: 55;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: 52px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--text-primary);
+  color: var(--bg-base);
+  font-family: inherit;
+  font-size: var(--label-md);
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: gap 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.pg-view__label {
+  display: block;
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0;
+  transition: max-width 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease, padding 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.pg-view__icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  flex: 0 0 52px;
+}
+.pg-view__icon svg { width: 20px; height: 20px; }
+
+.pg-view:hover .pg-view__label,
+.pg-view:focus-visible .pg-view__label {
+  max-width: 160px;
+  padding-left: 22px;
+  opacity: 1;
+}
+.pg-view:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 3px; }
+html.has-cursor .pg-view { cursor: none; }
+
+/* Touch has no hover, so the label is simply always there. */
+@media (hover: none) {
+  .pg-view__label { max-width: 160px; padding-left: 22px; opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pg-view, .pg-view__label { transition: none; }
+}

@@ -886,6 +886,7 @@
         '<a href="' + siteUrl('./') + '">Work</a>' +
         '<a href="' + siteUrl('approach') + '">Approach</a>' +
         '<a href="' + siteUrl('about') + '">About</a>' +
+        '<a href="' + siteUrl('playground') + '">Playground</a>' +
         '<a class="js-menu-contact" href="mailto:' + escAttr(CONTACT_EMAIL) + '">Contact</a>' +
       '</nav>' +
       // The same classes the contact panel uses, so the two read as one piece of design
@@ -1065,6 +1066,402 @@
       tl.call(() => { if (window.koduOpenReveals) window.koduOpenReveals(); }, null, 0.6);
     });
     return;
+  }
+
+
+  /* ---------- Playground — an endless, draggable field of work ----------
+     One block holds every image, packed into balanced columns. That block is then repeated
+     in both axes and the wrapper's offset is wrapped with a modulo, so the field never ends
+     while the DOM stays fixed: only enough copies to cover the viewport ever exist.
+
+     The trick that makes it tile is equal column heights. Columns are packed shortest-first
+     so they come out close, then the leftover is shared between that column's gaps — which
+     evens the block out exactly without cropping or rescaling a single image. */
+  if (body.dataset.view === 'playground') {
+    const field = document.querySelector('.playground__field');
+    const TILES = window.KODU_PLAYGROUND || [];
+
+    if (field && TILES.length) {
+      lockScroll('playground');
+
+      // The reference field is mostly air: the gap runs a little under half a tile wide, and
+      // that space is what stops a wall of mockups reading as a contact sheet. Proportional
+      // rather than fixed, so it holds at every column width.
+      const GAP_RATIO = 0.42;
+      const EASE = 0.12;        // how hard the field chases the pointer
+      const FRICTION = 0.93;    // how fast a flick runs out
+      const srcset = (t, ext) => (ext === 'webp' ? t.widths : t.jpgWidths)
+        .map((w) => siteUrl(t.src + '-' + w + '.' + ext) + ' ' + w + 'w').join(', ');
+      const biggest = (t) => siteUrl(t.src + '-' + t.widths[t.widths.length - 1] + '.webp');
+      const fallback = (t) => siteUrl(t.src + '-' + t.jpgWidths[t.jpgWidths.length - 1] + '.jpg');
+
+      // Enough columns that the block is wider than the screen, so the same image rarely
+      // appears twice at once.
+      function metrics() {
+        const vw = innerWidth;
+        let cols, colW;
+        if (vw >= 1400) { cols = 6; colW = 260; }
+        else if (vw >= 1100) { cols = 5; colW = 240; }
+        else if (vw >= 760) { cols = 4; colW = 210; }
+        else if (vw >= 520) { cols = 3; colW = 180; }
+        else { cols = 2; colW = 150; }
+
+        // The block has to be wider than the screen, or its horizontal repeat puts the same
+        // image on screen twice and the field stops reading as endless. Phones are where
+        // that bites, so widen the columns until the block clears the viewport.
+        const minBlock = vw + colW * 0.5;
+        if (cols * (colW + colW * GAP_RATIO) < minBlock) {
+          colW = Math.ceil(minBlock / cols / (1 + GAP_RATIO));
+        }
+        return { cols, colW, gap: Math.round(colW * GAP_RATIO) };
+      }
+
+      // Row view: the same images in one horizontal line, much larger, looping sideways
+      // for ever. Height-led rather than width-led, because a single row has to fit the
+      // screen vertically whatever shape the image is.
+      function rowMetrics() {
+        const { colW } = metrics();
+        const rowH = Math.round(Math.min(innerHeight * 0.66, colW * 2.5));
+        return { rowH, gap: Math.round(rowH * 0.12) };
+      }
+
+      let blockW = 0, blockH = 0, wrapper = null;
+      const pos = { x: 0, y: 0 };      // where the field is drawn
+      const aim = { x: 0, y: 0 };      // where it is heading
+      const vel = { x: 0, y: 0 };
+      let frozen = false;              // true while an image is open
+      let mode = 'grid';
+      try { mode = localStorage.getItem('kodu-playground-view') === 'row' ? 'row' : 'grid'; } catch (e) {}
+
+      function tileEl(t, w, h, left, top) {
+        const el = document.createElement('button');
+        el.type = 'button';
+        el.className = 'pg-tile';
+        el.style.cssText = 'left:' + left + 'px;top:' + top + 'px;width:' + w + 'px;height:' + h + 'px';
+        el.dataset.slug = t.slug;
+        el.setAttribute('aria-label', 'Open image');
+        // The tile box is the image's own aspect ratio, so opening it is a straight
+        // uniform scale — no letterboxing and no distortion to correct for.
+        el.innerHTML =
+          '<picture>' +
+            '<source type="image/webp" srcset="' + srcset(t, 'webp') + '" sizes="' + Math.round(w) + 'px">' +
+            '<img src="' + fallback(t) + '" srcset="' + srcset(t, 'jpg') + '" sizes="' + Math.round(w) + 'px" ' +
+            'alt="" draggable="false" decoding="async">' +
+          '</picture>';
+        return el;
+      }
+
+      function buildRowBlock() {
+        const { rowH, gap } = rowMetrics();
+        const block = document.createElement('div');
+        block.className = 'pg-block';
+        const top = Math.round((innerHeight - rowH) / 2);
+        let x = 0;
+        TILES.forEach((t) => {
+          const w = Math.round(rowH * t.w / t.h);
+          block.appendChild(tileEl(t, w, rowH, Math.round(x), top));
+          x += w + gap;
+        });
+        blockW = Math.round(x);
+        blockH = innerHeight;
+        block.style.width = blockW + 'px';
+        block.style.height = blockH + 'px';
+        return block;
+      }
+
+      function buildGridBlock() {
+        const { cols, colW, gap } = metrics();
+        const columns = Array.from({ length: cols }, () => ({ items: [], h: 0 }));
+        TILES.forEach((t) => {
+          const col = columns.reduce((a, b) => (b.h < a.h ? b : a));
+          const h = Math.round(colW * t.h / t.w);
+          col.items.push({ t, h });
+          col.h += h + gap;
+        });
+
+        const H = Math.round(Math.max.apply(null, columns.map((c) => c.h)));
+        const block = document.createElement('div');
+        block.className = 'pg-block';
+
+        columns.forEach((col, ci) => {
+          const slack = (H - col.h) / Math.max(1, col.items.length);
+          let y = 0;
+          col.items.forEach(({ t, h }) => {
+            block.appendChild(tileEl(t, colW, h, ci * (colW + gap), Math.round(y)));
+            y += h + gap + slack;
+          });
+        });
+
+        blockW = cols * (colW + gap);
+        blockH = H;
+        block.style.width = blockW + 'px';
+        block.style.height = blockH + 'px';
+        return block;
+      }
+
+      function layout() {
+        const block = mode === 'row' ? buildRowBlock() : buildGridBlock();
+        // floor + 2, not ceil + 1. Both cover the viewport on paper, but ceil + 1 leaves
+        // exactly zero margin when the block divides the viewport evenly (a 1024 block on a
+        // 1024 screen), and a sub-pixel rounding there opens a 1px seam. floor + 2 always
+        // keeps a whole block spare, and still comes to 2 copies on any normal screen.
+        const cx = Math.floor(innerWidth / blockW) + 2;
+        // A row is one block tall by definition: it only ever loops sideways.
+        const cy = mode === 'row' ? 1 : Math.floor(innerHeight / blockH) + 2;
+        const wrap = document.createElement('div');
+        wrap.className = 'pg-wrap';
+        for (let j = 0; j < cy; j++) {
+          for (let i = 0; i < cx; i++) {
+            const copy = (i === 0 && j === 0) ? block : block.cloneNode(true);
+            copy.style.transform = 'translate3d(' + (i * blockW) + 'px,' + (j * blockH) + 'px,0)';
+            // Only the first block is reachable by keyboard: the copies are the same 33
+            // images again, and nobody wants to tab through them four times.
+            if (i || j) {
+              copy.setAttribute('aria-hidden', 'true');
+              copy.querySelectorAll('.pg-tile').forEach((t) => { t.tabIndex = -1; });
+            }
+            wrap.appendChild(copy);
+          }
+        }
+        wrapper = wrap;
+        field.replaceChildren(wrap);
+        draw();
+      }
+
+      const mod = (v, m) => ((v % m) + m) % m;
+      // Shifted a whole block left/up so the wrapper always overhangs the top-left corner.
+      function draw() {
+        const ty = mode === 'row' ? 0 : mod(pos.y, blockH) - blockH;
+        wrapper.style.transform = 'translate3d(' + (mod(pos.x, blockW) - blockW) + 'px,' + ty + 'px,0)';
+      }
+
+      /* ---------- panning ---------- */
+      let dragging = false, moved = 0, startX = 0, startY = 0, lastX = 0, lastY = 0;
+      // Which tile the press started on. Capturing the pointer sends every later event,
+      // the click included, to the field itself, so by then e.target no longer knows which
+      // image was under the cursor — this is the only reliable record of it.
+      let downTile = null;
+
+      field.addEventListener('pointerdown', (e) => {
+        if (frozen || e.button) return;
+        dragging = true;
+        moved = 0;
+        downTile = e.target.closest('.pg-tile');
+        startX = lastX = e.clientX;
+        startY = lastY = e.clientY;
+        vel.x = vel.y = 0;
+        field.setPointerCapture(e.pointerId);
+        field.classList.add('is-dragging');
+      });
+
+      field.addEventListener('pointermove', (e) => {
+        if (!dragging || frozen) return;
+        const dx = e.clientX - lastX;
+        // A row only moves sideways, so vertical drag is dropped rather than fought with.
+        const dy = mode === 'row' ? 0 : e.clientY - lastY;
+        lastX = e.clientX; lastY = e.clientY;
+        aim.x += dx; aim.y += dy;
+        vel.x = dx; vel.y = dy;
+        moved = Math.max(moved, Math.hypot(e.clientX - startX, e.clientY - startY));
+        hideHint();
+      });
+
+      const endDrag = (e) => {
+        if (!dragging) return;
+        dragging = false;
+        field.classList.remove('is-dragging');
+        if (field.hasPointerCapture && e && field.hasPointerCapture(e.pointerId)) field.releasePointerCapture(e.pointerId);
+      };
+      field.addEventListener('pointerup', (e) => {
+        const tile = downTile;
+        endDrag(e);
+        downTile = null;
+        // A press that stayed put is a click on that image; anything further was a drag.
+        if (!frozen && tile && moved <= 6) openImage(tile);
+      });
+      field.addEventListener('pointercancel', (e) => { downTile = null; endDrag(e); });
+
+      field.addEventListener('wheel', (e) => {
+        if (frozen) return;
+        e.preventDefault();
+        if (mode === 'row') {
+          // Both axes drive the carousel, so an ordinary mouse wheel moves it too.
+          aim.x -= e.deltaX + e.deltaY;
+        } else {
+          aim.x -= e.deltaX;
+          aim.y -= e.deltaY;
+        }
+        vel.x = vel.y = 0;
+        hideHint();
+      }, { passive: false });
+
+      gsap.ticker.add(() => {
+        if (frozen) return;
+        if (!dragging && (vel.x || vel.y)) {
+          aim.x += vel.x; aim.y += vel.y;
+          vel.x *= FRICTION; vel.y *= FRICTION;
+          if (Math.abs(vel.x) < 0.05) vel.x = 0;
+          if (Math.abs(vel.y) < 0.05) vel.y = 0;
+        }
+        if (reduceMotion) { pos.x = aim.x; pos.y = aim.y; }
+        else { pos.x += (aim.x - pos.x) * EASE; pos.y += (aim.y - pos.y) * EASE; }
+        draw();
+      });
+
+      /* ---------- the hint ---------- */
+      const hint = document.querySelector('.playground__hint');
+      let hintGone = false;
+      function hideHint() {
+        if (hintGone || !hint) return;
+        hintGone = true;
+        if (reduceMotion) hint.style.display = 'none';
+        else gsap.to(hint, { autoAlpha: 0, duration: 0.4, onComplete: () => hint.remove() });
+      }
+      if (hint) setTimeout(hideHint, 6000);
+
+      /* ---------- open one larger ---------- */
+      let openEl = null, openTile = null, openData = null;
+
+      // Bigger, but deliberately not full screen — the field stays visible around it.
+      function openBox(t) {
+        const maxW = Math.min(innerWidth * 0.72, 1100);
+        const maxH = innerHeight * 0.8;
+        const scale = Math.min(maxW / t.w, maxH / t.h);
+        const w = t.w * scale, h = t.h * scale;
+        return { w, h, left: (innerWidth - w) / 2, top: (innerHeight - h) / 2 };
+      }
+
+      function openImage(tile) {
+        if (openEl) return;
+        const t = TILES.find((x) => x.slug === tile.dataset.slug);
+        const img = tile.querySelector('img');
+        if (!t || !img) return;
+
+        const r = img.getBoundingClientRect();
+        const { w, h, left, top } = openBox(t);
+
+        frozen = true;
+        openData = t;
+        openTile = tile;
+        tile.style.visibility = 'hidden';
+
+        openEl = document.createElement('div');
+        openEl.className = 'pg-open';
+        openEl.innerHTML = '<div class="pg-open__backdrop"></div>' +
+          '<img class="pg-open__img" alt="" draggable="false">';
+        const shown = openEl.querySelector('.pg-open__img');
+        // Start from whatever the tile already has decoded so there is never a blank frame,
+        // then quietly upgrade to the large copy once it has arrived.
+        shown.src = img.currentSrc || img.src;
+        shown.style.cssText = 'left:' + left + 'px;top:' + top + 'px;width:' + w + 'px;height:' + h + 'px';
+        body.appendChild(openEl);
+
+        const big = new Image();
+        big.onload = () => { if (openEl) shown.src = big.src; };
+        big.src = biggest(t);
+
+        const backdrop = openEl.querySelector('.pg-open__backdrop');
+        if (reduceMotion) {
+          gsap.set(backdrop, { autoAlpha: 1 });
+        } else {
+          gsap.set(shown, { transformOrigin: '0 0' });
+          gsap.fromTo(backdrop, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.35 });
+          gsap.fromTo(shown,
+            { x: r.left - left, y: r.top - top, scale: r.width / w },
+            { x: 0, y: 0, scale: 1, duration: 0.6, ease: 'power3.inOut' });
+        }
+        openEl.addEventListener('pointerdown', (e) => { e.stopPropagation(); closeImage(); });
+      }
+
+      function closeImage() {
+        if (!openEl) return;
+        // A resize rebuilds the field, which detaches the tile this came from; there is
+        // nothing left to fly back to, so fall through to the fade below.
+        const el = openEl, tile = openTile && openTile.isConnected ? openTile : null;
+        openEl = null; openTile = null; openData = null;
+        const finish = () => {
+          el.remove();
+          if (tile) tile.style.visibility = '';
+          frozen = false;
+        };
+        if (reduceMotion) { finish(); return; }
+        const shown = el.querySelector('.pg-open__img');
+        const img = tile && tile.querySelector('img');
+        // The field has not moved while this was open, so the tile is still where it was.
+        const r = img ? img.getBoundingClientRect() : null;
+        const box = shown.getBoundingClientRect();
+        gsap.to(el.querySelector('.pg-open__backdrop'), { autoAlpha: 0, duration: 0.4 });
+        if (!r) { gsap.to(shown, { autoAlpha: 0, duration: 0.3, onComplete: finish }); return; }
+        gsap.to(shown, {
+          x: r.left - parseFloat(shown.style.left),
+          y: r.top - parseFloat(shown.style.top),
+          scale: r.width / box.width,
+          duration: 0.55, ease: 'power3.inOut', onComplete: finish,
+        });
+      }
+
+      // Pointer clicks are handled on pointerup above. This is only for keyboard activation
+      // of a focused tile, which fires a click with no pointer behind it (detail 0).
+      field.addEventListener('click', (e) => {
+        const tile = e.target.closest('.pg-tile');
+        if (!tile) return;
+        e.preventDefault();
+        if (e.detail === 0) openImage(tile);
+      });
+
+      addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && openEl) closeImage();
+      });
+
+      /* ---------- grid / row toggle ----------
+         Sits bottom right, collapsed to a disc and opening into a pill on hover or focus.
+         It names the view it will switch you to, so the button reads as the action. */
+      const GRID_ICON = lucide('<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>');
+      const ROW_ICON = lucide('<rect x="2" y="7" width="6" height="10" rx="1"/><rect x="10" y="7" width="6" height="10" rx="1"/><rect x="18" y="7" width="6" height="10" rx="1"/>');
+
+      const viewBtn = document.createElement('button');
+      viewBtn.type = 'button';
+      viewBtn.className = 'pg-view';
+      function paintBtn() {
+        const next = mode === 'grid' ? 'Row view' : 'Grid view';
+        viewBtn.innerHTML = '<span class="pg-view__label">' + next + '</span>' +
+          '<span class="pg-view__icon">' + (mode === 'grid' ? ROW_ICON : GRID_ICON) + '</span>';
+        viewBtn.setAttribute('aria-label', 'Switch to ' + next.toLowerCase());
+      }
+      paintBtn();
+      viewBtn.addEventListener('click', () => {
+        if (openEl) closeImage();
+        mode = mode === 'grid' ? 'row' : 'grid';
+        try { localStorage.setItem('kodu-playground-view', mode); } catch (e) {}
+        // Start the new view from a clean position: carrying a grid's vertical offset into
+        // a row would land you in the middle of nowhere.
+        pos.x = pos.y = aim.x = aim.y = vel.x = vel.y = 0;
+        paintBtn();
+        layout();
+      });
+      field.parentNode.appendChild(viewBtn);
+
+      /* ---------- resize ---------- */
+      let resizeTimer = 0;
+      addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          // The column count changes with the viewport, so the field is always rebuilt.
+          layout();
+          // An image left open has to be re-centred and re-fitted too, or it keeps the size
+          // it was given for the old viewport and hangs off the edge.
+          if (openEl && openData) {
+            const shown = openEl.querySelector('.pg-open__img');
+            const { w, h, left, top } = openBox(openData);
+            gsap.set(shown, { x: 0, y: 0, scale: 1 });
+            shown.style.cssText = 'left:' + left + 'px;top:' + top + 'px;width:' + w + 'px;height:' + h + 'px';
+          }
+        }, 180);
+      });
+
+      layout();
+    }
+      return;
   }
 
   /* ---------- Homepage ---------- */
@@ -1457,6 +1854,7 @@
       if (card) openProject(card, state.slug, false);
     }
   });
+
 
 
 })();

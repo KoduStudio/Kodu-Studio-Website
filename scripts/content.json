@@ -1,8 +1,8 @@
 {
   "about": {
-    "background": "I studied Visual Communication Design at university, and somewhere in there modern Swiss design got hold of me and never let go. All that grid, all that restraint, type doing the heavy lifting. I spent those years learning everything I could get my hands on. BEECH hired me not long after I finished, I built my first website there, and I haven’t really stopped since. It turns out what I loved about Swiss posters is the same thing I love about a good website: everything in its right place, and nothing in the way.",
-    "body": "I design websites and digital products from first sketch to final build, alongside brand identities and print. I like work that feels calm, considered and easy to use, and I’m just as interested in how something moves as how it looks. If you’d like to talk design, or just want to say hi, I’d love to hear from you.",
-    "intro": "Hey, I’m Lachlan Sarv, and welcome to Kodu Studio. I’m a digital & graphic designer from Newcastle, NSW. I’m the Lead UI/UX Designer at BEECH Agency, and Kodu Studio showcases agency work I’ve been a part of, client work, and personal projects.",
+    "background": "I studied Visual Communication Design at university and spent those years learning everything I could get my hands on, with a soft spot for clean, editorial design that has never quite worn off. BEECH hired me straight out of uni. I started there on poster and merch design, moved into websites not long after, and I haven’t really stopped since. Those poster years never really left me, and editorial web design is where the two halves meet: big type, a clear hierarchy, everything in its right place and nothing in the way.",
+    "body": "I design websites and digital products from the first sketch to the final build, alongside brand identity and print. I like work that feels calm and considered, the sort you can use without having to think about it. I care as much about how something moves as how it looks. If you’d like to talk design, or just say hi, I’d genuinely love to hear from you.",
+    "intro": "Hey, I’m Lachlan Sarv, a digital & graphic designer from Newcastle, NSW. By day I’m the Lead UI/UX Designer at BEECH Agency. Kodu Studio is where I keep the rest of it: agency work I’ve had a hand in, client projects, and the things I make simply because I want to.",
     "services": [
       "Website & UI Design",
       "Design Systems (Figma)",
@@ -14,37 +14,37 @@
   },
   "approach": {
     "approachHeading": "My Approach",
-    "faqIntro": "Here are the questions that come up before most projects. If there is more you would like to know, feel free to reach out and contact me.",
+    "faqIntro": "These are the questions that come up before most projects. If there’s something else you’re wondering about, just ask. I’m always happy to talk it through.",
     "faqs": [
       {
-        "answer": "A single page site is usually three to four weeks. A full site with brand work behind it runs eight to twelve. Most of that is strategy and design; the build is the quick part. I take only a small number of client projects per year, so yours is never sitting in a queue and gets my full attention.",
+        "answer": "A single page site is usually three to four weeks. A full site with brand work behind it runs eight to twelve. Most of that is strategy and design, the build is the quick part. I only take on a small number of client projects a year, so yours is never sitting in a queue waiting for me to get to it.",
         "question": "How long does a project take?"
       },
       {
-        "answer": "Most of my sites are built with Astro and hosted on Cloudflare, so they load fast, even on a phone with patchy reception. I focus on simple, well-designed sites that do their job without fuss, and for bigger or more custom projects I bring in a developer I trust.\n\nIf you’d like to update your own content later, depending on the size of your project I can set you up with Sanity, a simple editor for changing text and images yourself.",
+        "answer": "Most of my sites are built with Astro and hosted on Cloudflare, so they load fast even on a phone with one bar of reception. I’d rather make a simple site that does its job properly than a complicated one that doesn’t, and for bigger or more custom builds I bring in a developer I trust.\n\nIf you’d like to update things yourself later, I can set you up with Sanity, a simple editor for changing your own text and images. It depends a little on the size of the project, so we’ll talk it through.",
         "question": "How do you build the sites?"
       },
       {
-        "answer": "Every project is quoted as a fixed fee once we have scoped it on a call, so there are no hourly surprises. Cost tracks the size of the site and how much brand and strategy work sits behind it. If there is a budget you need to stay inside, say so early and I will tell you honestly what fits.",
+        "answer": "Everything is quoted as a fixed fee once we’ve scoped it out on a call, so there are no hourly surprises at the end. The number tracks the size of the site and how much brand and strategy work sits behind it. If you’ve got a budget you need to stay inside, tell me early and I’ll be straight with you about what fits.",
         "question": "What does it cost?"
       },
       {
-        "answer": "Time early on, and the truth about your business. A kickoff call, whatever you already have (logos, photography, copy, analytics), and one person who can give feedback and make decisions. If copy or photography is missing, I will tell you before we start rather than halfway through.",
+        "answer": "Some time early on, and the honest version of your business. A kickoff call, whatever you already have (logos, photography, copy, analytics), and one person who can give feedback and make the calls. If copy or photography is missing, I’ll tell you before we start rather than halfway through.",
         "question": "What do you need from me?"
       },
       {
-        "answer": "Yes, if you want. Hosting on Cloudflare is inexpensive, and I can keep it running, make changes as you need them and keep an eye on performance. If you would rather own it outright, I hand the whole thing over with documentation and no lock in.",
+        "answer": "Happily, if you want me to. Hosting on Cloudflare is cheap, and I can keep it running, make changes as you need them and keep an eye on how it’s performing. If you’d rather own the whole thing outright, that’s completely fine too. I hand it over with documentation and no lock in.",
         "question": "Do you look after the site after launch?"
       },
       {
-        "answer": "Yes of course! If you have a brand you are happy with, I work inside it rather than reinventing it. If you have a developer or an internal marketing team, I can design and hand over, or build alongside them. ",
+        "answer": "Yes, of course. If you’ve got a brand you’re happy with, I’ll work inside it rather than try to reinvent it. And if you’ve got a developer or an internal marketing team, I can design and hand over, or build alongside them.",
         "question": "Can you work with my existing brand or team?"
       }
     ],
     "intro": "Every project starts from the same brief: a site that looks considered and has a real job to do. It should tell your story, show people what sets your brand apart, and point visitors toward the next step.",
     "steps": [
       {
-        "description": "It starts with a call, then the research. I look at what you’re selling, who’s buying and why, then shape that into positioning and a story that sounds like you rather than everyone else. I dig into how those people actually behave too, so the design is built to convert from the first sketch.",
+        "description": "It starts with a call, then the research. I look at what you’re selling, who’s buying it and why, then shape that into positioning and a story that sounds like you rather than everyone else. I dig into how those people actually behave too, so the design is built to convert from the very first sketch.",
         "name": "Strategy",
         "tags": [
           "Discovery & Research",
@@ -55,7 +55,7 @@
         ]
       },
       {
-        "description": "I design polished brands and web experiences with a modern Swiss edge. Exceptionally clear and packed with distinct personality. I focus entirely on what works best for you, building clean structures that let your brand carry the page, giving visitors one unmistakable reason to act.",
+        "description": "This is my favourite part. I design brands and websites that are clear, considered and full of personality, and I’m happy to work in whatever direction suits you rather than bending every project to one style. Wherever we land, the aim is the same: let your brand carry the page, and give visitors one unmistakable reason to act.",
         "name": "Design",
         "tags": [
           "Art Direction",
@@ -66,7 +66,7 @@
         ]
       },
       {
-        "description": "I build everything to perform exactly as well as it looks. Whether it’s a brand identity structured to scale cleanly across platforms or a website built to load instantly on a phone, execution matters. Because a sharp design that’s clunky to use or slow to arrive still loses people.",
+        "description": "I build everything to perform exactly as well as it looks. That might be a brand identity structured to scale cleanly across every platform, or a website that loads instantly on a phone. It matters, because a sharp design that’s clunky to use or slow to arrive still loses people.",
         "name": "Build",
         "tags": [
           "Astro",

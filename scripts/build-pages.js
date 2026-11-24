@@ -112,6 +112,7 @@ const urls = [
   { loc: `${SITE}/`, priority: '1.0' },
   { loc: `${SITE}/about`, priority: '0.8' },
   { loc: `${SITE}/approach`, priority: '0.8' },
+  { loc: `${SITE}/playground`, priority: '0.6' },
   { loc: `${SITE}/privacy`, priority: '0.3' },
   ...Object.keys(data).map((slug) => ({ loc: `${SITE}/projects/${slug}`, priority: '0.7' })),
 ];

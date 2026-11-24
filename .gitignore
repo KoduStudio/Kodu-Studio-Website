@@ -10,3 +10,7 @@ studio/dist/
 studio/.sanity/
 .env
 .env.local
+
+# Playground originals: 100MB+ of source art that only this machine needs. The tiles the
+# build makes from them ARE committed, so the site and Vercel never miss them.
+content/_playground/

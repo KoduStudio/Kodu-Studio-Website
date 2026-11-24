@@ -40,6 +40,26 @@ drop a folder of images + a `project.json` into `content/`, then double-click **
 Projects stay on this flow rather than in Sanity because resizing the images needs macOS
 `sips`, which can't run on Vercel.
 
+## The playground
+
+`/playground` is an endless, draggable field of images. To change what's in it, add or
+remove files in **`content/_playground/`** and run the build — nothing else to edit.
+
+- Any `.jpg` or `.png`; each keeps its own shape, so no need to crop to a size.
+- Originals can be as big as you like. The build makes 400 / 800px tiles and a 1600px copy
+  for the opened view; a 17MB poster ships as a ~40KB tile.
+- Identical files are skipped automatically, so OneDrive "- Copy" duplicates are harmless.
+- The originals are **not in git** (they are 100MB+). They live on this Mac only; the tiles
+  the build makes from them are committed, so the site never misses them. Keep a backup.
+- There are two views, a grid and a single looping row, toggled bottom right. The choice is
+  remembered per visitor in `localStorage`.
+- The underscore keeps the folder out of the project scan, and `content/` is in
+  `.vercelignore`, so the originals never deploy.
+
+The grid repeats one block of every image in both directions. That only tiles seamlessly if
+every column is the same height, so the build packs them shortest-column-first and the
+leftover is shared between that column's gaps — nothing is cropped or rescaled to fit.
+
 ## Staging
 
 Vercel builds every branch, so anything that isn't `main` deploys to its own URL and
@@ -69,12 +89,13 @@ Publish in the Studio rebuilds `main` and silently undoes it.
 
 ## The build
 
-`scripts/build.js` is just an orchestrator. The real work is three scripts, split by what
+`scripts/build.js` is just an orchestrator. The real work is four scripts, split by what
 each one needs to run:
 
 | Script | Does | Needs |
 |---|---|---|
 | `build-images.js` | resizes images, writes `projects.js` + `cards.json` | macOS (`sips`, `cwebp`) |
+| `build-playground.js` | resizes the playground tiles, writes `playground.js` | macOS (`sips`, `cwebp`) |
 | `build-copy.js` | fetches copy from Sanity, writes it into the pages + `site.js` | the network |
 | `build-pages.js` | writes the project pages, homepage cards and sitemap | neither |
 
@@ -87,14 +108,18 @@ a cache of the last good fetch — slightly stale copy rather than an empty page
 ## Structure
 
 - `content/<slug>/` — source of truth for projects: original images + `project.json`
+- `content/_playground/` — source images for the playground page (originals, never deployed)
 - `studio/` — the Sanity Studio (schemas for the page copy); deploy with `npx sanity deploy`
 - `scripts/` — the build (see above), plus `templates/project.html` and the `content.json` cache
 - `images/<slug>/` — generated responsive JPG + WebP (1200 / 2000 / 2800 + covers)
+- `images/playground/` — generated playground tiles (400 / 800 / 1600 WebP + JPG fallback)
 - `projects.js` — generated project data used by `main.js`
+- `playground.js` — generated playground tile list used by `main.js`
 - `site.js` — generated contact details from Sanity, used by `main.js`
 - `projects/<slug>.html` — generated standalone project pages (refresh/deep-link safe)
 - `index.html` — homepage; the cards between `<!-- projects:start/end -->` are generated
 - `about.html` / `approach.html` / `privacy.html` — copy between `<!-- copy:… -->` markers is generated
+- `playground.html` — the playground shell; the grid itself is built by `main.js`
 - `main.js` — intro animation, theme toggle, contact panel, card → project transitions
 - `styles.css` — design tokens, layout, light/dark themes
 
